@@ -1,0 +1,5 @@
+content	zotero-open-pdf				content/
+locale	zotero-open-pdf	en-US		locale/en-US/
+skin	zotero-open-pdf	default		skin/
+
+overlay	chrome://zotero/content/zoteroPane.xul	chrome://zotero-open-pdf/content/zotero-open-pdf.xul
