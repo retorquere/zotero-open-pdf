@@ -45,19 +45,37 @@ if (!Zotero.OpenPDFExternal) {
           }
           menuitem.setAttribute('zotero-open-pdf-external', 'true')
 
+          const isPDFPath = (attachmentPath: string) => {
+            const pos = attachmentPath.lastIndexOf('.')
+            const ext = attachmentPath.substring(pos+1).toUpperCase()
+            return pos !== -1 && ext === 'PDF'
+          }
+
           if (Zotero.Prefs.get('fileHandler.pdf')) { // existing Open option = external
             menuitem.setAttribute('label', Zotero.getString('locate.internalViewer.label') as string)
-            menuitem.onclick = async () => {
-              const selected = globals.ZoteroPane_Local.getSelectedItems().pop()
-              if (selected) await Zotero.Reader.open(selected.itemID, false, { openInWindow: false })
-            }
+            menuitem.addEventListener('command', async function(event) {
+              event.stopPropagation()
+              const items = globals.ZoteroPane_Local.getSelectedItems()
+              for (const item of items) {
+                const attachment = item.isAttachment() ? item : (await item.getBestAttachment())
+                if (attachment && attachment.attachmentPath && isPDFPath(attachment.attachmentPath)) {
+                  await Zotero.Reader.open(attachment.itemID, false, { openInWindow: false })
+                }
+              }
+            }, false)
           }
           else { // existing Open option = internal
             menuitem.setAttribute('label', Zotero.getString('locate.externalViewer.label') as string)
-            menuitem.onclick = () => {
-              const selected = globals.ZoteroPane_Local.getSelectedItems().pop()
-              if (selected && selected.attachmentPath) Zotero.launchFile(selected.getFilePath())
-            }
+            menuitem.addEventListener('command', async function(event) {
+              event.stopPropagation()
+              const items = globals.ZoteroPane_Local.getSelectedItems()
+              for (const item of items) {
+                const attachment = item.isAttachment() ? item : (await item.getBestAttachment())
+                if (attachment && attachment.attachmentPath && isPDFPath(attachment.attachmentPath)) {
+                  Zotero.launchFile(attachment.getFilePath())
+                }
+              }
+            }, false)
           }
 
           // sibling.after(menuitem)
