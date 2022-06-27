@@ -53,12 +53,12 @@ if (!Zotero.OpenPDFExternal) {
 
           if (Zotero.Prefs.get('fileHandler.pdf')) { // existing Open option = external
             menuitem.setAttribute('label', Zotero.getString('locate.internalViewer.label') as string)
-            menuitem.addEventListener('command', async function(event) {
+            menuitem.addEventListener('command', async event => {
               event.stopPropagation()
               const items = globals.ZoteroPane_Local.getSelectedItems()
               for (const item of items) {
                 const attachment = item.isAttachment() ? item : (await item.getBestAttachment())
-                if (attachment && attachment.attachmentPath && isPDFPath(attachment.attachmentPath)) {
+                if (attachment && attachment.attachmentPath && isPDFPath(attachment.attachmentPath as string)) {
                   await Zotero.Reader.open(attachment.itemID, false, { openInWindow: false })
                 }
               }
@@ -66,12 +66,12 @@ if (!Zotero.OpenPDFExternal) {
           }
           else { // existing Open option = internal
             menuitem.setAttribute('label', Zotero.getString('locate.externalViewer.label') as string)
-            menuitem.addEventListener('command', async function(event) {
+            menuitem.addEventListener('command', async event => {
               event.stopPropagation()
               const items = globals.ZoteroPane_Local.getSelectedItems()
               for (const item of items) {
                 const attachment = item.isAttachment() ? item : (await item.getBestAttachment())
-                if (attachment && attachment.attachmentPath && isPDFPath(attachment.attachmentPath)) {
+                if (attachment && attachment.attachmentPath && isPDFPath(attachment.attachmentPath as string)) {
                   Zotero.launchFile(attachment.getFilePath())
                 }
               }
