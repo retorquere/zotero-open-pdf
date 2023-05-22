@@ -120,24 +120,13 @@ export async function startup({ id, version, resourceURI, rootURI = resourceURI.
   // Add DOM elements to the main Zotero pane
   log('loading lib')
   var win = Zotero.getMainWindow()
-  Services.scriptloader.loadSubScript(`${rootURI}lib.js`, {
-    Zotero,
-    ZoteroPane: Zotero.getActiveZoteroPane(),
-    window: win,
-    document: win.document,
-    setInterval: win.setInterval.bind(win),
-    clearInterval: win.clearInterval.bind(win),
-    TextDecoder: win.TextDecoder,
-    require: win.require,
-    ErrorEvent: win.ErrorEvent,
-    Zotero_LocateMenu: win.Zotero_LocateMenu,
-  })
+  Services.scriptloader.loadSubScript(`${rootURI}lib.js`, { Zotero })
   log(`lib loaded: ${Object.keys(Zotero.AltOpenPDF)}`) // eslint-disable-line @typescript-eslint/no-unsafe-argument
   try {
     Zotero.AltOpenPDF.startup()
   }
   catch (err) {
-    log(`lib load error: ${err}`)
+    log(`startup error: ${err}`)
   }
 }
 
@@ -145,8 +134,13 @@ export function shutdown() {
   log('Shutting down')
 
   if (Zotero.AltOpenPDF) {
-    Zotero.AltOpenPDF.shutdown()
-    delete Zotero.AltOpenPDF
+    try {
+      Zotero.AltOpenPDF.shutdown()
+      delete Zotero.AltOpenPDF
+    }
+    catch (err) {
+      log(`shutdown error: ${err}`)
+    }
   }
 }
 

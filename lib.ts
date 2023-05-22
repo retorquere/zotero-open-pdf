@@ -1,9 +1,35 @@
-/* eslint-disable prefer-arrow/prefer-arrow-functions, @typescript-eslint/require-await */
+/* eslint-disable no-var, prefer-arrow/prefer-arrow-functions, @typescript-eslint/require-await */
 
-declare const dump: (msg: string) => void
+// declare const dump: (msg: string) => void
+
+declare const ChromeUtils: any
 import { patch as $patch$, unpatch as $unpatch$ } from './monkey-patch'
 
-dump('AltOpen PDF: loading\n')
+declare const Zotero: any
+var window: Window
+var document: Document
+// var setInterval
+// var clearInterval
+// var TextDecoder
+// var require
+// var ErrorEvent
+var Zotero_LocateMenu
+var ZoteroPane
+
+function newWindow() {
+  window = Zotero.getMainWindow()
+  ZoteroPane = Zotero.getActiveZoteroPane()
+  document = window.document
+  // setInterval = window.setInterval.bind(win)
+  // clearInterval = window.clearInterval.bind(win)
+  // TextDecoder = window.TextDecoder
+  // require = window.require
+  // ErrorEvent = window.ErrorEvent
+  Zotero_LocateMenu = (window as any).Zotero_LocateMenu
+}
+newWindow()
+
+if (typeof Services == 'undefined') var { Services } = ChromeUtils.import('resource://gre/modules/Services.jsm') // eslint-disable-line no-var
 
 declare const Components: any
 const {
@@ -13,9 +39,18 @@ const {
   // Constructor: CC,
 } = Components
 
-declare const Zotero: any
-declare const ZoteroPane: any
-declare const Zotero_LocateMenu: any
+const windowListener = {
+  onOpenWindow: xulWindow => {
+    const win: Window = xulWindow.QueryInterface(Components.interfaces.nsIInterfaceRequestor).getInterface(Components.interfaces.nsIDOMWindow)
+    win.addEventListener('load', function listener() { // eslint-disable-line prefer-arrow/prefer-arrow-functions
+      newWindow()
+      Zotero.AltOpenPDF?.startup()
+    }, false)
+  },
+  // onCloseWindow: () => { },
+  // onWindowTitleChange: _xulWindow => { },
+}
+Services.wm.addListener(windowListener)
 
 const NAMESPACE = {
   XUL: 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul',
