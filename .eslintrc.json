@@ -223,10 +223,7 @@
     "no-invalid-this": "off",
     "no-irregular-whitespace": "error",
     "no-magic-numbers": "off",
-    "@typescript-eslint/no-magic-numbers": [ "error", {
-      "ignore": [ -1, 0, 1, 2 ],
-      "ignoreEnums": true
-    }],
+    "@typescript-eslint/no-magic-numbers": "off",
     "no-new-wrappers": "error",
     "no-redeclare": "error",
     "no-throw-literal": "error",

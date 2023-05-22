@@ -1,7 +1,7 @@
 {
   "name": "zotero-open-pdf",
-  "version": "0.0.4",
-  "description": "Open PDF in external reader",
+  "version": "0.0.1",
+  "description": "Open PDF",
   "scripts": {
     "lint": "eslint . --ext .ts --cache --cache-location .eslintcache/",
     "prebuild": "npm run lint",
@@ -24,23 +24,25 @@
   },
   "homepage": "https://github.com/retorquere/zotero-open-pdf",
   "dependencies": {
-    "@types/mocha": "^9.1.1",
-    "@typescript-eslint/eslint-plugin": "^5.29.0",
-    "@typescript-eslint/parser": "^5.29.0",
-    "esbuild": "^0.14.47",
-    "eslint": "^8.18.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsdoc": "^39.3.3",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "esbuild": "^0.17.15",
+    "eslint": "^8.38.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsdoc": "^40.1.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "mkdirp": "^1.0.4",
-    "rimraf": "^3.0.2",
-    "ts-node": "^10.8.1",
-    "typescript": "^4.7.4",
-    "zotero-plugin": "^1.4.5"
+    "mkdirp": "^2.1.6",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^4.4.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4",
+    "zotero-plugin": "^1.4.17",
+    "zotero-types": "^1.0.13"
   },
   "xpi": {
-    "name": "Open Pdf for Zotero",
+    "name": "Open PDF for Zotero",
     "updateLink": "https://github.com/retorquere/zotero-open-pdf/releases/download/v{version}/zotero-open-pdf-{version}.xpi",
-    "releaseURL": "https://github.com/retorquere/zotero-open-pdf/releases/download/release/"
+    "releaseURL": "https://github.com/retorquere/zotero-open-pdf/releases/download/release/",
+    "bootstrapped": true
   }
 }

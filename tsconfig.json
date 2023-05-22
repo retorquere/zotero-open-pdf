@@ -10,17 +10,13 @@
     "preserveConstEnums": false,
     "sourceMap": false,
     "downlevelIteration": true,
-    "lib": [ "es2017", "dom", "dom.iterable" ],
+    "lib": [ "es2017", "dom" ],
     "typeRoots": [
       "./typings",
       "./node_modules/@types"
     ]
   },
-  "include": [
-    "content/**/*",
-    "resource/**/*",
-    "*.ts"
-  ],
+  "include": [ "*.ts", "typing", "node_modules/zotero-types" ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts",
