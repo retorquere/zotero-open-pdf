@@ -1,6 +1,6 @@
 {
   "name": "zotero-open-pdf",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Open PDF",
   "scripts": {
     "lint": "eslint . --ext .ts --cache --cache-location .eslintcache/",
