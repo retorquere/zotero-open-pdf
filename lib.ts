@@ -86,7 +86,6 @@ Zotero.AltOpenPDF = Zotero.AltOpenPDF || new class ZoteroAltOpenPDF {
   }
 
   async startup() {
-    this.log('startup')
     this.log(`patching ${typeof Zotero_LocateMenu}`)
     $patch$(Zotero_LocateMenu, 'buildContextMenu', original => async function Zotero_LocateMenu_buildContextMenu(menu: HTMLElement, _showIcons: boolean): Promise<void> {
       await original.apply(this, arguments) // eslint-disable-line prefer-rest-params
