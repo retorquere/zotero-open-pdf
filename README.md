@@ -1,7 +1,7 @@
 Open Pdf
 =================
 
-Install by downloading the [latest version](https://github.com/retorquere/zotero-open-pdf/releases/latest)
+Install by downloading the [latest version](https://github.com/retorquere/zotero-open-pdf/releases/latest). Compatible with Zotero 6 and 7.
 
 Open PDF in external reader
 

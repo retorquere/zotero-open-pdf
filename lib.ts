@@ -43,6 +43,7 @@ const windowListener = {
   onOpenWindow: xulWindow => {
     const win: Window = xulWindow.QueryInterface(Components.interfaces.nsIInterfaceRequestor).getInterface(Components.interfaces.nsIDOMWindow)
     win.addEventListener('load', function listener() { // eslint-disable-line prefer-arrow/prefer-arrow-functions
+      Zotero.debug(`opened ${win.location.href}`)
       newWindow()
       Zotero.AltOpenPDF?.startup()
     }, false)
