@@ -118,15 +118,16 @@ export async function startup({ id, version, resourceURI, rootURI = resourceURI.
   }
 
   // Add DOM elements to the main Zotero pane
-  log('loading lib')
-  var win = Zotero.getMainWindow()
-  Services.scriptloader.loadSubScript(`${rootURI}lib.js`, { Zotero })
-  log(`lib loaded: ${Object.keys(Zotero.AltOpenPDF)}`) // eslint-disable-line @typescript-eslint/no-unsafe-argument
   try {
+    log('loading lib')
+    var win = Zotero.getMainWindow()
+    Services.scriptloader.loadSubScript(`${rootURI}lib.js`, { Zotero })
+    log(`AltOpen PDF: lib loaded: ${Object.keys(Zotero.AltOpenPDF)}`) // eslint-disable-line @typescript-eslint/no-unsafe-argument
     Zotero.AltOpenPDF.startup()
+    log('AltOpen PDF: started')
   }
   catch (err) {
-    log(`startup error: ${err}`)
+    log(`AltOpen PDF: startup error: ${err}`)
   }
 }
 
