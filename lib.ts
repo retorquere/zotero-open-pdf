@@ -93,7 +93,7 @@ function getOpener(opener: string): { label: string, cmdline: string } {
   if (!cmdline) return { label: '', cmdline: ''}
   const m = cmdline.match(/^\[(.+?)\](.+)/)
   if (m) return { label: m[1], cmdline: m[2] }
-  return { label: `Open with ${opener.replace(Openers, '')}`, cmdline }
+  return { label: `Open PDF with ${opener.replace(Openers, '')}`, cmdline }
 }
 
 function exec(exe: string, args: string[] = []): void {
