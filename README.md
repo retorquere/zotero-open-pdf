@@ -3,7 +3,26 @@ Open Pdf
 
 Install by downloading the [latest version](https://github.com/retorquere/zotero-open-pdf/releases/latest). Compatible with Zotero 6 and 7.
 
-Open PDF in external reader
+Zotero allows you to set a default for opening PDFs from Zotero:
+
+* with the system PDF viewer
+* with the internal PDF editor
+
+This plugin adds two things:
+
+* adds an option to the right-click menu of items to open PDFs with opposite of what you have configured in Zotero (so open with system PDF viewer if you have configured Zotero to open with the internal editor, and vice versa
+* allows you to add extra entries for your own PDF viewers/editor of choice
+
+To add your own, go into the Zotero preferences, tab Advanced, and open the config editor (You will be warned that you can break things. Don't break things). The right-click and add a new String entry. The key must start with `extensions.zotero.open-pdf.with.`, add any name you want after it, eg `extensions.zotero.open-pdf.with.skim`, and as the value enter the command line needed to start the app, giving `@pdf` as a parameter where the filename must go. this could eg be
+
+`extensions.zotero.open-pdf.with.preview` = `/usr/bin/open -a Preview @pdf`
+
+which would add an option `Open with preview` to the menu. You can set your own menu label by adding it before the path in brackets:
+
+`extensions.zotero.open-pdf.with.skim` = `[Open with Skim]/usr/bin/open -a Skim @pdf`
+
+The plugin does not search the system PATH, you need to enter the full path to the executable.
+
 
 # Warning
 
