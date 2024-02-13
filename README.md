@@ -21,6 +21,10 @@ which would add an option `Open with preview` to the menu. You can set your own 
 
 `extensions.zotero.open-pdf.with.skim` = `[Open with Skim]/usr/bin/open -a Skim @pdf`
 
+or to use edge on windows as a PDF viewer
+
+`extensions.zotero.open-pdf.with.edge` = `"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -a @pdf`
+
 The plugin does not search the system PATH, you need to enter the full path to the executable.
 
 
