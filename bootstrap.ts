@@ -71,7 +71,6 @@ async function waitForZotero() {
   await Zotero.initializationPromise
 }
 
-
 // Loads default preferences from prefs.js in Zotero 6
 function setDefaultPrefs(rootURI) {
   var branch = Services.prefs.getDefaultBranch('')
@@ -88,13 +87,12 @@ function setDefaultPrefs(rootURI) {
           branch.setIntPref(pref, value)
           break
         default:
-          Zotero.logError(`Invalid type '${typeof(value)}' for pref '${pref}'`)
+          Zotero.logError(`Invalid type '${typeof value}' for pref '${pref}'`)
       }
     },
   }
   Services.scriptloader.loadSubScript(`${rootURI}prefs.js`, obj)
 }
-
 
 export async function install(): Promise<void> {
   await waitForZotero()
