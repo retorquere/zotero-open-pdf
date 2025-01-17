@@ -1,4 +1,4 @@
-Open Pdf
+Open PDF
 =================
 
 Install by downloading the [latest version](https://github.com/retorquere/zotero-open-pdf/releases/latest). Compatible with Zotero 6 and 7.
@@ -23,7 +23,13 @@ which would add an option `Open with preview` to the menu. You can set your own 
 
 If the path to the executable contains spaces, you need to enclose it in quotes, eg to use edge on windows as a PDF viewer:
 
-`extensions.zotero.open-pdf.with.edge` = `"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -a @pdf`
+`extensions.zotero.open-pdf.with.edge` = `"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" @pdf`
+
+A more complex example is that you can also open PDF files through extensions in Chrome, such as the Acrobat extension:
+
+`extensions.zotero.open-pdf.with.chrome-acrobat` = `"C:\Program Files\Google\Chrome\Application\chrome.exe" "chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/file:///@pdf"`
+
+"efaidnbmnnnibpcajpcglclefindmkaj" is the ID of the Acrobat extension. To enable the extension to read the file:/// protocol, you need to turn on "Allow access to file URLs" on the "Manage Extensions" page.
 
 The plugin does not search the system PATH, you need to enter the full path to the executable.
 
