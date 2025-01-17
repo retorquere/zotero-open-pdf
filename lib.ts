@@ -230,8 +230,9 @@ Zotero.AltOpenPDF = Zotero.AltOpenPDF || new class ZoteroAltOpenPDF {
               const items = ZoteroPane.getSelectedItems()
               for (const item of items) {
                 const attachment = item.isAttachment() ? item : (await item.getBestAttachment())
-                if (attachment?.attachmentPath.match(/[.]pdf$/i)) {
-                  exec(cmd, args.map((arg : string) => arg.toLowerCase().includes('@pdf') ? arg.toLowerCase().replace('@pdf', attachment.getFilePath() as string) : arg))
+                if (attachment?.attachmentPath?.match(/[.]pdf$/i)) {
+                  const path: string = attachment.getFilePath()
+                  exec(cmd, args.map((arg: string) => arg.replace(/@pdf/i, path)))
                 }
               }
             }
