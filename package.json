@@ -39,7 +39,8 @@
     "name": "Open PDF for Zotero",
     "updateLink": "https://github.com/retorquere/zotero-open-pdf/releases/download/v{version}/zotero-open-pdf-{version}.xpi",
     "releaseURL": "https://github.com/retorquere/zotero-open-pdf/releases/download/release/",
-    "bootstrapped": true
+    "bootstrapped": true,
+    "minVersion": "7.*"
   },
   "devDependencies": {
     "typescript-eslint": "^8.19.1"
