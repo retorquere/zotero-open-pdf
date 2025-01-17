@@ -9,6 +9,7 @@
     "postbuild": "zotero-plugin-zipup build zotero-open-pdf",
     "release": "zotero-plugin-release",
     "postversion": "git push --follow-tags",
+    "postinstall": "patch-package",
     "start": "zotero-start"
   },
   "repository": {
@@ -33,16 +34,17 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3",
     "zotero-plugin": "^5.0.1",
-    "zotero-types": "^3.1.2"
+    "zotero-types": "^3.1.5"
   },
   "xpi": {
     "name": "Open PDF for Zotero",
     "updateLink": "https://github.com/retorquere/zotero-open-pdf/releases/download/v{version}/zotero-open-pdf-{version}.xpi",
     "releaseURL": "https://github.com/retorquere/zotero-open-pdf/releases/download/release/",
     "bootstrapped": true,
-    "minVersion": "7.*"
+    "minVersion": "7.0"
   },
   "devDependencies": {
-    "typescript-eslint": "^8.19.1"
+    "patch-package": "^8.0.0",
+    "typescript-eslint": "^8.20.0"
   }
 }

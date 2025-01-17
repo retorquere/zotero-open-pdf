@@ -1,0 +1,12 @@
+diff --git a/node_modules/zotero-types/types/xpcom/prefs.d.ts b/node_modules/zotero-types/types/xpcom/prefs.d.ts
+index c379671..dcc245e 100644
+--- a/node_modules/zotero-types/types/xpcom/prefs.d.ts
++++ b/node_modules/zotero-types/types/xpcom/prefs.d.ts
+@@ -37,5 +37,7 @@ declare namespace Zotero {
+      * @param {Symbol} symbol - Symbol returned from registerObserver()
+      */
+     function unregisterObserver(symbol: symbol): void;
++
++    let rootBranch: any
+   }
+ }

@@ -2,64 +2,13 @@
 
 // declare const dump: (msg: string) => void
 
-declare const ChromeUtils: any
-
 import { patch as $patch$, unpatch as $unpatch$ } from './monkey-patch'
 import unshell from 'shell-quote/parse'
-
-declare const Zotero: any
-
-var window: Window
-var document: Document
-// var setInterval
-// var clearInterval
-// var TextDecoder
-// var require
-// var ErrorEvent
-var Zotero_LocateMenu
-var ZoteroPane
-
-function newWindow() {
-  window = Zotero.getMainWindow()
-  ZoteroPane = Zotero.getActiveZoteroPane()
-  document = window.document
-  // setInterval = window.setInterval.bind(win)
-  // clearInterval = window.clearInterval.bind(win)
-  // TextDecoder = window.TextDecoder
-  // require = window.require
-  // ErrorEvent = window.ErrorEvent
-  Zotero_LocateMenu = (window as any).Zotero_LocateMenu
-}
-newWindow()
-
-if (typeof Services == 'undefined') var { Services } = ChromeUtils.import('resource://gre/modules/Services.jsm') // eslint-disable-line no-var
-
-declare const Components: any
-const {
-  // interfaces: Ci,
-  // results: Cr,
-  utils: Cu,
-  // Constructor: CC,
-} = Components
 
 function log(msg) {
   if (typeof msg !== 'string') msg = JSON.stringify(msg)
   Zotero.debug(`AltOpen PDF: ${msg}`)
 }
-
-const windowListener = {
-  onOpenWindow: xulWindow => {
-    const win: Window = xulWindow.QueryInterface(Components.interfaces.nsIInterfaceRequestor).getInterface(Components.interfaces.nsIDOMWindow)
-    win.addEventListener('load', function listener() { // eslint-disable-line prefer-arrow/prefer-arrow-functions
-      log(`opened ${win.location.href}`)
-      newWindow()
-      Zotero.AltOpenPDF?.startup()
-    }, false)
-  },
-  // onCloseWindow: () => { },
-  // onWindowTitleChange: _xulWindow => { },
-}
-Services.wm.addListener(windowListener)
 
 const Openers = 'extensions.zotero.open-pdf.with.'
 
@@ -81,16 +30,11 @@ function removeElements() {
   }
 }
 
-if (Zotero.platformMajorVersion < 102) {
-  const props = ['URL', 'Blob', 'FormData'].filter(p => typeof p === 'undefined')
-  if (props.length) Cu.importGlobalProperties(props)
-}
-
 log('AltOpen PDF: lib loading')
 
 function getOpener(opener: string): { label: string, cmdline: string } {
   if (!opener) return { label: '', cmdline: ''}
-  const cmdline : string = Zotero.Prefs.get(opener, true)
+  const cmdline = Zotero.Prefs.get(opener, true) as string
   if (!cmdline) return { label: '', cmdline: ''}
   const m = cmdline.match(/^\[(.+?)\](.+)/)
   if (m) return { label: m[1], cmdline: m[2] }
@@ -133,14 +77,21 @@ function flash(title: string, body?: string, timeout = 8): void {
   }
 }
 
-Zotero.AltOpenPDF = Zotero.AltOpenPDF || new class ZoteroAltOpenPDF {
+export class ZoteroAltOpenPDF {
   shutdown() {
     log('shutdown')
     $unpatch$()
     removeElements()
   }
 
-  async startup() {
+  public async startup() {
+    if (Zotero.getMainWindow()) await this.onMainWindowLoad(Zotero.getMainWindow())
+  }
+
+  public async onMainWindowLoad({ window: Window }) {
+    const ZoteroPane = Zotero.getActiveZoteroPane()
+    const Zotero_LocateMenu = (window as any).Zotero_LocateMenu
+
     log(`patching ${typeof Zotero_LocateMenu}`)
     $patch$(Zotero_LocateMenu, 'buildContextMenu', original => async function Zotero_LocateMenu_buildContextMenu(menu: HTMLElement, _showIcons: boolean): Promise<void> {
       await original.apply(this, arguments) // eslint-disable-line prefer-rest-params
@@ -184,8 +135,8 @@ Zotero.AltOpenPDF = Zotero.AltOpenPDF || new class ZoteroAltOpenPDF {
             const items = ZoteroPane.getSelectedItems()
             for (const item of items) {
               const attachment = item.isAttachment() ? item : (await item.getBestAttachment())
-              if (attachment?.attachmentPath.match(/[.]pdf$/i)) {
-                await Zotero.Reader.open(attachment.itemID, false, { openInWindow: false })
+              if (attachment && attachment.attachmentPath.match(/[.]pdf$/i)) {
+                await Zotero.Reader.open(attachment.id, undefined, { openInWindow: false })
               }
             }
           }, false)
@@ -198,8 +149,9 @@ Zotero.AltOpenPDF = Zotero.AltOpenPDF || new class ZoteroAltOpenPDF {
             const items = ZoteroPane.getSelectedItems()
             for (const item of items) {
               const attachment = item.isAttachment() ? item : (await item.getBestAttachment())
-              if (attachment?.attachmentPath.match(/[.]pdf$/i)) {
-                Zotero.launchFile(attachment.getFilePath())
+              if (attachment && attachment?.attachmentPath.match(/[.]pdf$/i)) {
+                const path = attachment.getFilePath()
+                if (path) Zotero.launchFile(path)
               }
             }
           }, false)
@@ -230,9 +182,9 @@ Zotero.AltOpenPDF = Zotero.AltOpenPDF || new class ZoteroAltOpenPDF {
               const items = ZoteroPane.getSelectedItems()
               for (const item of items) {
                 const attachment = item.isAttachment() ? item : (await item.getBestAttachment())
-                if (attachment?.attachmentPath?.match(/[.]pdf$/i)) {
-                  const path: string = attachment.getFilePath()
-                  exec(cmd, args.map((arg: string) => arg.replace(/@pdf/i, path)))
+                if (attachment && attachment.attachmentPath?.match(/[.]pdf$/i)) {
+                  const path = attachment.getFilePath()
+                  if (path) exec(cmd, args.map((arg: string) => arg.replace(/@pdf/i, path)))
                 }
               }
             }
@@ -249,3 +201,4 @@ Zotero.AltOpenPDF = Zotero.AltOpenPDF || new class ZoteroAltOpenPDF {
     })
   }
 }
+Zotero.AltOpenPDF = Zotero.AltOpenPDF || new ZoteroAltOpenPDF

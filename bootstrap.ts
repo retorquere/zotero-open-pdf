@@ -39,26 +39,27 @@ export async function startup({ id, version, resourceURI, rootURI = resourceURI.
   }
 }
 
+export function onMainWindowLoad({ window }) {
+  Zotero.AltOpenPDF.onMainWindowLoad({ window })
+}
+
+export function onMainWindowUnload({ window }) {
+  Zotero.AltOpenPDF.onMainWindowUnload({ window })
+}
+
 export function shutdown() {
   log('Shutting down')
 
   if (Zotero.AltOpenPDF) {
     try {
       Zotero.AltOpenPDF.shutdown()
-      delete Zotero.AltOpenPDF
     }
     catch (err) {
       log(`shutdown error: ${err}`)
     }
+    delete Zotero.AltOpenPDF
   }
 }
 
 export function uninstall() {
-  // `Zotero` object isn't available in `uninstall()` in Zotero 6, so log manually
-  if (typeof Zotero == 'undefined') {
-    dump('AltOpen PDF: Uninstalled\n\n')
-    return
-  }
-
-  log('Uninstalled')
 }

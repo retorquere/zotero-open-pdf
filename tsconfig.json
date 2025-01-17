@@ -10,16 +10,9 @@
     "preserveConstEnums": false,
     "sourceMap": false,
     "downlevelIteration": true,
-    "lib": [ "es2017", "dom" ],
-    "typeRoots": [
-      "./typings",
-      "./node_modules/@types"
-    ]
+    "skipLibCheck": true,
+    "lib": [ "es2017", "dom", "dom.iterable", "webworker", "ES2021.WeakRef" ],
+    "typeRoots": [ "./typings", "./node_modules/@types" ]
   },
-  "include": [ "*.ts", "typing", "node_modules/zotero-types" ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts",
-    "typings"
-  ]
+  "include": [ "typings/*", "*.ts", "node_modules/zotero-types" ]
 }
