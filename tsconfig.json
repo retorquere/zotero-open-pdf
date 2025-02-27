@@ -12,7 +12,8 @@
     "downlevelIteration": true,
     "skipLibCheck": true,
     "lib": [ "es2017", "dom", "dom.iterable", "webworker", "ES2021.WeakRef" ],
-    "typeRoots": [ "./typings", "./node_modules/@types" ]
+    "typeRoots": [ "node_modules", "./typings", "./node_modules/@types" ],
+    "types": ["zotero-types"]
   },
-  "include": [ "typings/*", "*.ts", "node_modules/zotero-types" ]
+  "include": [ "typings/*", "*.ts" ]
 }
