@@ -12,18 +12,6 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 19.x
-    - name: Cache node dependencies
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-dependencies
-      with:
-        path: |
-          ~/.npm
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
     - name: install node dependencies
       run: npm install
     - name: build
