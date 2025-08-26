@@ -159,7 +159,7 @@ export class ZoteroAltOpenPDF {
 
         sibling.parentNode.insertBefore(alternate, sibling.nextSibling)
 
-        for (const cmdline of (Zotero.Prefs.rootBranch.getChildList(Openers, {}, {}) as string[]).sort()) {
+        for (const cmdline of (Zotero.Prefs.rootBranch.getChildList(Openers) as string[]).sort()) {
           const opener = getOpener(cmdline)
           if (!opener.label || !opener.cmdline) continue
 

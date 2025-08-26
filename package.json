@@ -25,16 +25,16 @@
   },
   "homepage": "https://github.com/retorquere/zotero-open-pdf",
   "dependencies": {
-    "dprint": "^0.49.0",
-    "esbuild": "^0.25.1",
+    "dprint": "^0.50.1",
+    "esbuild": "^0.25.9",
     "mkdirp": "^3.0.1",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
-    "shell-quote": "^1.8.2",
+    "shell-quote": "^1.8.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.2",
-    "zotero-plugin": "^5.0.13",
-    "zotero-types": "^3.1.7"
+    "typescript": "^5.9.2",
+    "zotero-plugin": "^5.0.31",
+    "zotero-types": "^4.0.5"
   },
   "xpi": {
     "name": "Open PDF for Zotero",
@@ -45,6 +45,6 @@
   },
   "devDependencies": {
     "patch-package": "^8.0.0",
-    "typescript-eslint": "^8.26.1"
+    "typescript-eslint": "^8.41.0"
   }
 }
