@@ -85,10 +85,15 @@ export class ZoteroAltOpenPDF {
   }
 
   public async startup() {
-    if (Zotero.getMainWindow()) await this.onMainWindowLoad(Zotero.getMainWindow())
+    log('startup')
+    await this.onMainWindowLoad({ window: Zotero.getMainWindow() })
+    log('started')
   }
 
   public async onMainWindowLoad({ window: Window }) {
+    log(`onMainWindowLoad: ${!!window}`)
+    if (!window) return
+
     const ZoteroPane = Zotero.getActiveZoteroPane()
     const Zotero_LocateMenu = (window as any).Zotero_LocateMenu
 
