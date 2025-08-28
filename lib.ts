@@ -6,7 +6,6 @@ import { MenuManager, MenuitemOptions } from 'zotero-plugin-toolkit'
 const Menu = new MenuManager()
 
 import unshell from 'shell-quote/parse'
-import { patch as $patch$, unpatch as $unpatch$ } from './monkey-patch'
 
 function log(msg) {
   if (typeof msg !== 'string') msg = JSON.stringify(msg)
@@ -90,45 +89,34 @@ async function selectedPDF() {
   return attachment.isPDFAttachment() ? attachment : null
 }
 
-type AsyncFunction<T extends any[]> = (...args: T) => Promise<any>;
-function runAsync(asyncFunc: () => Promise<void>): void {
-  (async () => {
-    try {
-      await asyncFunc();
-    } catch (err) {
-      log(`error: ${err.message}`)
-    }
-  })()
-}
-
 function openerMenuItem(opener: Opener): MenuitemOptions {
   return {
     tag: 'menuitem',
     label: opener.label,
     isHidden: async (elem, ev) => !(await selectedPDF()),
-    commandListener: (ev) => runAsync(async () => {
+    commandListener: async (ev) => {
       const target = ev.target as HTMLSelectElement
       let args: string[] = unshell(opener.cmdline)
       const cmd = args.shift()
       const pdf = await selectedPDF()
       exec(cmd, args.map((arg: string) => arg.replace(/@pdf/i, pdf.getFilePath() as string)))
-    }),
+    },
   }
 }
 export class ZoteroAltOpenPDF {
   shutdown() {
     log('shutdown')
-    $unpatch$()
     removeElements()
+    Menu.unregisterAll()
   }
 
   public async startup() {
     log('startup')
-    await this.onMainWindowLoad({ window: Zotero.getMainWindow() })
+    await this.onMainWindowLoad()
     log('started')
   }
 
-  public async onMainWindowLoad({ window: Window }) {
+  public async onMainWindowLoad() {
     const openers: MenuitemOptions[] = (Zotero.Prefs.rootBranch.getChildList(Openers) as string[])
       .map(cmdline => getOpener(cmdline))
       .filter(opener => opener.label && opener.cmdline)
@@ -153,6 +141,10 @@ export class ZoteroAltOpenPDF {
         ...openers,
       ],
     })
+  }
+
+  public async onMainWindowUnLoad() {
+    Menu.unregisterAll()
   }
 }
 Zotero.AltOpenPDF = Zotero.AltOpenPDF || new ZoteroAltOpenPDF()
