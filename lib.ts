@@ -12,7 +12,10 @@ function log(msg) {
   Zotero.debug(`AltOpen PDF: ${msg}`)
 }
 
-const Openers = 'extensions.zotero.open-pdf.with.'
+const Openers = {
+  pdf: 'extensions.zotero.open-pdf.with.',
+  snapshot: 'extensions.zotero.open-snapshot.with.',
+}
 
 const NAMESPACE = {
   XUL: 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul',
@@ -34,14 +37,25 @@ function removeElements() {
 
 log('AltOpen PDF: lib loading')
 
-type Opener = { label: string; cmdline: string }
-function getOpener(opener: string): Opener {
-  if (!opener) return { label: '', cmdline: '' }
-  const cmdline = Zotero.Prefs.get(opener, true) as string
-  if (!cmdline) return { label: '', cmdline: '' }
-  const m = cmdline.match(/^\[(.+?)\](.+)/)
-  if (m) return { label: m[1], cmdline: m[2] }
-  return { label: `Open PDF with ${opener.replace(Openers, '')}`, cmdline }
+type Opener = { type: string, label: string; cmdline: string }
+function getOpener(pref: string): Opener {
+  const opener = { type: '', label: '', cmdline: '' }
+
+  let m = pref?.match(/^extensions\.zotero\.open-(?<type>pdf|snapshot)\.with\.(?<label>.+)/)
+  if (!m) return opener
+
+  opener.type = m.groups.type
+  opener.label = `Open ${m.groups.type === 'pdf' ? 'PDF' : m.groups.type} with ${m.groups.label}`
+  opener.cmdline = (Zotero.Prefs.get(pref, true) as string) || ''
+
+  if (opener.cmdline) {
+    m = opener.cmdline.match(/^\[(?<label>.+?)\](?<cmdline>.+)/)
+    if (m) {
+      opener.label = m.groups.label
+      opener.cmdline = m.groups.cmdline
+    }
+  }
+  return opener
 }
 
 function exec(exe: string, args: string[] = []): void {
@@ -89,17 +103,26 @@ async function selectedPDF() {
   return attachment.isPDFAttachment() ? attachment : null
 }
 
-function openerMenuItem(opener: Opener): MenuitemOptions {
+async function selectedSnapshot() {
+  const items = Zotero.getActiveZoteroPane().getSelectedItems()
+  if (items.length !== 1) return null
+  const attachment = items[0].isAttachment() ? items[0] : await items[0].getBestAttachment()
+  if (!attachment) return null
+  if (!attachment.getFilePath()) return null
+  return attachment.isSnapshotAttachment() ? attachment : null
+}
+
+function openerMenuItem(opener: Opener, placeholder, selected): MenuitemOptions {
   return {
     tag: 'menuitem',
     label: opener.label,
-    isHidden: async (elem, ev) => !(await selectedPDF()),
+    isHidden: async (elem, ev) => !(await selected()),
     commandListener: async (ev) => {
       const target = ev.target as HTMLSelectElement
       let args: string[] = unshell(opener.cmdline)
       const cmd = args.shift()
-      const pdf = await selectedPDF()
-      exec(cmd, args.map((arg: string) => arg.replace(/@pdf/i, pdf.getFilePath() as string)))
+      const attachment = await selected()
+      exec(cmd, args.map((arg: string) => arg.replace(placeholder, attachment.getFilePath() as string)))
     },
   }
 }
@@ -117,29 +140,55 @@ export class ZoteroAltOpenPDF {
   }
 
   public async onMainWindowLoad() {
-    const openers: MenuitemOptions[] = (Zotero.Prefs.rootBranch.getChildList(Openers) as string[])
-      .map(cmdline => getOpener(cmdline))
-      .filter(opener => opener.label && opener.cmdline)
-      .map(opener => openerMenuItem(opener))
+    const openers: { pdf: MenuitemOptions[]; snapshot: MenuitemOptions[] } = {
+      pdf: (Zotero.Prefs.rootBranch.getChildList(Openers.pdf) as string[])
+        .map(pref => getOpener(pref))
+        .filter(opener => opener.label && opener.cmdline)
+        .map(opener => openerMenuItem(opener, /@pdf/ig, selectedPDF)),
+      snapshot: (Zotero.Prefs.rootBranch.getChildList(Openers.snapshot) as string[])
+        .map(pref => getOpener(pref))
+        .filter(opener => opener.label && opener.cmdline)
+        .map(opener => openerMenuItem(opener, /@snapshot/ig, selectedSnapshot)),
+    }
 
     Menu.register('item', {
       tag: 'menu',
       label: 'Open PDF',
       icon: require('./pdf.png'),
+      isHidden: async (elem, ev) => !(await selectedPDF()),
       children: [
         {
           tag: 'menuitem',
           label: Zotero.getString('locate.internalViewer.label') as string,
-          isHidden: async (elem, ev) => (!Zotero.Prefs.get('fileHandler.pdf') || !(await selectedPDF())),
+          isHidden: (elem, ev) => !Zotero.Prefs.get('fileHandler.pdf'),
           commandListener: async () => Zotero.Reader.open((await selectedPDF())!.id, undefined, { openInWindow: false }),
         },
         {
           tag: 'menuitem',
           label: Zotero.getString('locate.externalViewer.label') as string,
-          isHidden: async (elem, ev) => ((Zotero.Prefs.get('fileHandler.pdf') !== 'system') || !(await selectedPDF())),
+          isHidden: (elem, ev) => Zotero.Prefs.get('fileHandler.pdf') !== 'system',
           commandListener: async () => Zotero.launchFile((await selectedPDF())!.getFilePath() as string),
         },
-        ...openers,
+        ...openers.pdf,
+      ],
+    })
+
+    Menu.register('item', {
+      tag: 'menu',
+      label: 'Open Snapshot',
+      isHidden: async (elem, ev) => !(await selectedSnapshot()),
+      children: [
+        {
+          tag: 'menuitem',
+          label: Zotero.getString('locate.internalViewer.label') as string,
+          commandListener: async () => Zotero.Reader.open((await selectedSnapshot())!.id, undefined, { openInWindow: false }),
+        },
+        {
+          tag: 'menuitem',
+          label: Zotero.getString('locate.externalViewer.label') as string,
+          commandListener: async () => Zotero.launchFile((await selectedSnapshot())!.getFilePath() as string),
+        },
+        ...openers.snapshot,
       ],
     })
   }
