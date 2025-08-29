@@ -124,7 +124,7 @@ export class ZoteroAltOpenPDF {
 
     Menu.register('item', {
       tag: 'menu',
-      label: 'PDF',
+      label: 'Open PDF',
       children: [
         {
           tag: 'menuitem',
