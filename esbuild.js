@@ -20,6 +20,9 @@ async function bundle(config) {
     inject: [],
     treeShaking: true,
     keepNames: true,
+    loader: {
+      '.png': 'dataurl',
+    },
     ...config,
   }
 

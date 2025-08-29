@@ -125,6 +125,7 @@ export class ZoteroAltOpenPDF {
     Menu.register('item', {
       tag: 'menu',
       label: 'Open PDF',
+      icon: require('./pdf.png'),
       children: [
         {
           tag: 'menuitem',
