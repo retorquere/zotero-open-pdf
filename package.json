@@ -33,7 +33,7 @@
     "shell-quote": "^1.8.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
-    "zotero-plugin": "^5.0.33",
+    "zotero-plugin": "^5.0.34",
     "zotero-plugin-toolkit": "^5.1.0-beta.9",
     "zotero-types": "^4.0.5"
   },
