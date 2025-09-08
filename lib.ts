@@ -17,24 +17,6 @@ function log(msg) {
 
 const Openers = 'extensions.zotero.open-pdf.with.'
 
-const NAMESPACE = {
-  XUL: 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul',
-  HTML: 'http://www.w3.org/1999/xhtml',
-}
-function createElement(name: string, attrs: Record<string, string> = {}, namespace = NAMESPACE.XUL): HTMLElement {
-  const elt: HTMLElement = document.createElementNS(namespace, name) as HTMLElement
-  attrs.class = `alt-open-pdf ${attrs.class || ''}`.trim()
-  for (const [a, v] of Object.entries(attrs)) {
-    elt.setAttribute(a, v)
-  }
-  return elt
-}
-function removeElements() {
-  for (const elt of Array.from(document.getElementsByClassName('alt-open-pdf'))) {
-    elt.remove()
-  }
-}
-
 log('AltOpen PDF: lib loading')
 
 type Opener = { label: string; cmdline: string }
@@ -109,7 +91,6 @@ function openerMenuItem(opener: Opener): MenuitemOptions {
 export class ZoteroAltOpenPDF {
   shutdown() {
     log('shutdown')
-    removeElements()
     Menu.unregisterAll()
   }
 
@@ -120,7 +101,26 @@ export class ZoteroAltOpenPDF {
   }
 
   public async onMainWindowLoad() {
-    const openers: MenuitemOptions[] = (Zotero.Prefs.rootBranch.getChildList(Openers) as string[])
+    const system: MenuitemOptions[] = [
+      {
+        tag: 'menuitem',
+        label: Zotero.getString('locate.internalViewer.label') as string,
+        isHidden: async (elem, ev) => (!Zotero.Prefs.get('fileHandler.pdf') || !(await selectedPDF())),
+        commandListener: async () => {
+          Zotero.Reader.open((await selectedPDF())!.id, undefined, { openInWindow: false })
+        },
+      },
+      {
+        tag: 'menuitem',
+        label: Zotero.getString('locate.externalViewer.label') as string,
+        isHidden: async (elem, ev) => ((Zotero.Prefs.get('fileHandler.pdf') !== 'system') || !(await selectedPDF())),
+        commandListener: async () => {
+          Zotero.launchFile((await selectedPDF())!.getFilePath() as string)
+        },
+      },
+    ]
+
+    const custom: MenuitemOptions[] = (Zotero.Prefs.rootBranch.getChildList(Openers) as string[])
       .map(cmdline => getOpener(cmdline))
       .filter(opener => opener.label && opener.cmdline)
       .map(opener => openerMenuItem(opener))
@@ -130,19 +130,8 @@ export class ZoteroAltOpenPDF {
       label: 'Open PDF',
       icon: require('./pdf.png'),
       children: [
-        {
-          tag: 'menuitem',
-          label: Zotero.getString('locate.internalViewer.label') as string,
-          isHidden: async (elem, ev) => (!Zotero.Prefs.get('fileHandler.pdf') || !(await selectedPDF())),
-          commandListener: async () => Zotero.Reader.open((await selectedPDF())!.id, undefined, { openInWindow: false }),
-        },
-        {
-          tag: 'menuitem',
-          label: Zotero.getString('locate.externalViewer.label') as string,
-          isHidden: async (elem, ev) => ((Zotero.Prefs.get('fileHandler.pdf') !== 'system') || !(await selectedPDF())),
-          commandListener: async () => Zotero.launchFile((await selectedPDF())!.getFilePath() as string),
-        },
-        ...openers,
+        ...system,
+        ...custom,
       ],
     })
   }
