@@ -89,15 +89,17 @@ export class ZoteroAltOpenPDF {
   shutdown() {
     log('shutdown')
     Menu.unregisterAll()
+    log('shutdown done')
   }
 
   public async startup() {
-    log('startup, awaiting onMainWindowLoad')
+    log('startup')
     await this.onMainWindowLoad({ window: Zotero.getMainWindow() })
-    log('started')
+    log('startup done')
   }
 
   public async onMainWindowLoad({ window }) {
+    log(`onMainWindowLoad: ${!window.document.getElementById('open-pdf-internal')}`)
     if (window.document.getElementById('open-pdf-internal')) return
 
     const system: MenuitemOptions[] = [
@@ -126,7 +128,8 @@ export class ZoteroAltOpenPDF {
       .filter(opener => opener.label && opener.cmdline)
       .map(opener => openerMenuItem(opener))
 
-    log([ ...system, ...custom ].map(mi => mi.label).join('; '))
+    log(JSON.stringify(await Promise.all([ ...system, ...custom ].map(async mi => ({ label: mi.label, hidden: await mi.isHidden(null, null) })))))
+
     Menu.register('item', {
       tag: 'menu',
       label: 'Open PDF',
@@ -136,11 +139,14 @@ export class ZoteroAltOpenPDF {
         ...custom,
       ],
     })
+    log('onMainWindowLoad done')
   }
 
   public async onMainWindowUnLoad() {
+    log('onMainWindowUnload')
     Menu.unregisterAll()
+    log('onMainWindowUnload done')
   }
 }
 Zotero.AltOpenPDF = Zotero.AltOpenPDF || new ZoteroAltOpenPDF()
-log(`lib loaded: ${Zotero.AltOpenPDF.startup}`)
+log('lib loaded')

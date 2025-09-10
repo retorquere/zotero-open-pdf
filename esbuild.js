@@ -25,7 +25,6 @@ async function bundle(config) {
     },
     ...config,
   }
-  console.log('bundle', config)
 
   let target
   if (config.outfile) {
