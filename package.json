@@ -6,11 +6,12 @@
     "lint": "dprint fmt bootstrap.ts content/*.ts && dprint check bootstrap.ts content/*.ts",
     "prebuild": "npm run lint",
     "build": "tsc --noEmit && node esbuild.js",
-    "postbuild": "zotero-plugin-zipup build zotero-open-pdf",
-    "release": "zotero-plugin-release",
+    "postbuild": "zp-zipup build zotero-open-pdf",
+    "release": "zp-release",
     "postversion": "git push --follow-tags",
     "postinstall": "patch-package",
-    "start": "zotero-start"
+    "start": "zotero-start",
+    "beta": "zotero-start --beta"
   },
   "repository": {
     "type": "git",
@@ -33,7 +34,7 @@
     "shell-quote": "^1.8.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
-    "zotero-plugin": "^5.0.36",
+    "zotero-plugin": "^6.1.0",
     "zotero-plugin-toolkit": "^5.1.0-beta.9",
     "zotero-types": "^4.0.5"
   },
@@ -46,6 +47,6 @@
   },
   "devDependencies": {
     "patch-package": "^8.0.0",
-    "typescript-eslint": "^8.41.0"
+    "typescript-eslint": "^8.43.0"
   }
 }
