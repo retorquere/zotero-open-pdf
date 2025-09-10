@@ -15,44 +15,41 @@ var ftlID = 'zotero-alt-open-pdf-ftl'
 var menuitemID = 'make-it-green-instead'
 var addedElementIDs = [stylesheetID, ftlID, menuitemID]
 
-function log(msg) {
-  Zotero.debug(`AltOpen PDF: (bootstrap) ${msg}`)
-}
+import { bootstrapLog as log } from './log'
 
 export async function install(): Promise<void> {
 }
 
 export async function startup({ id, version, resourceURI, rootURI = resourceURI.spec }): Promise<void> {
-  log('Starting')
+  log('startup')
 
   // Add DOM elements to the main Zotero pane
   try {
     log('loading lib')
-    var win = Zotero.getMainWindow()
     Services.scriptloader.loadSubScript(`${rootURI}lib.js`, { Zotero })
-    log(`AltOpen PDF: lib loaded: ${Object.keys(Zotero.AltOpenPDF)}`) // eslint-disable-line @typescript-eslint/no-unsafe-argument
-    Zotero.AltOpenPDF.startup()
-    log('AltOpen PDF: started')
+    log(`lib loaded: ${Zotero.AltOpenPDF.startup}`) // eslint-disable-line @typescript-eslint/no-unsafe-argument
+    await Zotero.AltOpenPDF.startup()
+    log('started')
   }
   catch (err) {
-    log(`AltOpen PDF: startup error: ${err}`)
+    log(`startup error: ${err}`)
   }
 }
 
-export function onMainWindowLoad({ window }) {
-  Zotero.AltOpenPDF.onMainWindowLoad({ window })
+export async function onMainWindowLoad({ window }) {
+  await Zotero.AltOpenPDF.onMainWindowLoad({ window })
 }
 
-export function onMainWindowUnload({ window }) {
-  Zotero.AltOpenPDF.onMainWindowUnload({ window })
+export async function onMainWindowUnload({ window }) {
+  await Zotero.AltOpenPDF.onMainWindowUnload({ window })
 }
 
-export function shutdown() {
+export async function shutdown() {
   log('Shutting down')
 
   if (Zotero.AltOpenPDF) {
     try {
-      Zotero.AltOpenPDF.shutdown()
+      await Zotero.AltOpenPDF.shutdown()
     }
     catch (err) {
       log(`shutdown error: ${err}`)

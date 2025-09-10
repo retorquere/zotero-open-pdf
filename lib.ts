@@ -10,14 +10,11 @@ DebugLog.register('Open PDF', ['extensions.zotero.open-pdf.'])
 
 import unshell from 'shell-quote/parse'
 
-function log(msg) {
-  if (typeof msg !== 'string') msg = JSON.stringify(msg)
-  Zotero.debug(`AltOpen PDF: ${msg}`)
-}
+import { log } from './log'
 
 const Openers = 'extensions.zotero.open-pdf.with.'
 
-log('AltOpen PDF: lib loading')
+log('lib loading')
 
 type Opener = { label: string; cmdline: string }
 function getOpener(opener: string): Opener {
@@ -26,7 +23,7 @@ function getOpener(opener: string): Opener {
   if (!cmdline) return { label: '', cmdline: '' }
   const m = cmdline.match(/^\[(.+?)\](.+)/)
   if (m) return { label: m[1], cmdline: m[2] }
-  return { label: `Open PDF with ${opener.replace(Openers, '')}`, cmdline }
+  return { label: `Open with ${opener.replace(Openers, '')}`, cmdline }
 }
 
 function exec(exe: string, args: string[] = []): void {
@@ -95,15 +92,18 @@ export class ZoteroAltOpenPDF {
   }
 
   public async startup() {
-    log('startup')
-    await this.onMainWindowLoad()
+    log('startup, awaiting onMainWindowLoad')
+    await this.onMainWindowLoad({ window: Zotero.getMainWindow() })
     log('started')
   }
 
-  public async onMainWindowLoad() {
+  public async onMainWindowLoad({ window }) {
+    if (window.document.getElementById('open-pdf-internal')) return
+
     const system: MenuitemOptions[] = [
       {
         tag: 'menuitem',
+        id: 'open-pdf-internal',
         label: Zotero.getString('locate.internalViewer.label') as string,
         isHidden: async (elem, ev) => (!Zotero.Prefs.get('fileHandler.pdf') || !(await selectedPDF())),
         commandListener: async () => {
@@ -112,6 +112,7 @@ export class ZoteroAltOpenPDF {
       },
       {
         tag: 'menuitem',
+        id: 'open-pdf-system',
         label: Zotero.getString('locate.externalViewer.label') as string,
         isHidden: async (elem, ev) => ((Zotero.Prefs.get('fileHandler.pdf') !== 'system') || !(await selectedPDF())),
         commandListener: async () => {
@@ -125,6 +126,7 @@ export class ZoteroAltOpenPDF {
       .filter(opener => opener.label && opener.cmdline)
       .map(opener => openerMenuItem(opener))
 
+    log([ ...system, ...custom ].map(mi => mi.label).join('; '))
     Menu.register('item', {
       tag: 'menu',
       label: 'Open PDF',
@@ -141,3 +143,4 @@ export class ZoteroAltOpenPDF {
   }
 }
 Zotero.AltOpenPDF = Zotero.AltOpenPDF || new ZoteroAltOpenPDF()
+log(`lib loaded: ${Zotero.AltOpenPDF.startup}`)

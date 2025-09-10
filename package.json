@@ -10,7 +10,9 @@
     "release": "zp-release",
     "postversion": "git push --follow-tags",
     "postinstall": "patch-package",
+    "prestart": "npm run build",
     "start": "zotero-start",
+    "prebeta": "npm run build",
     "beta": "zotero-start --beta"
   },
   "repository": {
