@@ -6,7 +6,7 @@ import { MenuManager, MenuitemOptions } from 'zotero-plugin-toolkit'
 const Menu = new MenuManager()
 
 import { DebugLog } from 'zotero-plugin/debug-log'
-DebugLog.register('Open PDF', ['extensions.zotero.open-pdf.'])
+DebugLog.register('Open PDF', ['extensions.zotero.open-pdf.', ':fileHandler.pdf'])
 
 import unshell from 'shell-quote/parse'
 
