@@ -62,13 +62,18 @@ function flash(title: string, body?: string, timeout = 8): void {
   }
 }
 
-async function selectedPDF() {
+async function _selectedPDF() {
   const items = Zotero.getActiveZoteroPane().getSelectedItems()
   if (items.length !== 1) return null
   const attachment = items[0].isAttachment() ? items[0] : await items[0].getBestAttachment()
   if (!attachment) return null
   if (!attachment.getFilePath()) return null
   return attachment.isPDFAttachment() ? attachment : null
+}
+async function selectedPDF() {
+  const pdf = await _selectedPDF()
+  log(`selected PDF: ${pdf}`)
+  return pdf
 }
 
 function openerMenuItem(opener: Opener): MenuitemOptions {
