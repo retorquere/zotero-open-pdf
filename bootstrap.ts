@@ -15,7 +15,7 @@ var ftlID = 'zotero-alt-open-pdf-ftl'
 var menuitemID = 'make-it-green-instead'
 var addedElementIDs = [stylesheetID, ftlID, menuitemID]
 
-import { bootstrapLog as log } from './log'
+import { bootstrapLog as log } from './lib/log'
 
 export async function install(): Promise<void> {
 }

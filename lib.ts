@@ -10,7 +10,7 @@ DebugLog.register('Open PDF', ['extensions.zotero.open-pdf.', ':fileHandler.pdf'
 
 import unshell from 'shell-quote/parse'
 
-import { log } from './log'
+import { log } from './lib/log'
 
 const Openers = 'extensions.zotero.open-pdf.with.'
 
