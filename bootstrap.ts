@@ -25,9 +25,7 @@ export async function startup({ id, version, resourceURI, rootURI = resourceURI.
 
   // Add DOM elements to the main Zotero pane
   try {
-    log('loading lib')
     Services.scriptloader.loadSubScript(`${rootURI}lib.js`, { Zotero })
-    log(`lib loaded: ${Zotero.AltOpenPDF.startup}`) // eslint-disable-line @typescript-eslint/no-unsafe-argument
     await Zotero.AltOpenPDF.startup()
     log('started')
   }
