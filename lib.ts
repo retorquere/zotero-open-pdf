@@ -2,7 +2,7 @@
 
 // declare const dump: (msg: string) => void
 
-import { MenuManager, MenuitemOptions } from 'zotero-plugin-toolkit'
+import { MenuitemOptions, MenuManager } from 'zotero-plugin-toolkit'
 const Menu = new MenuManager()
 
 import { DebugLog } from 'zotero-plugin/debug-log'
@@ -77,20 +77,6 @@ async function selectedPDF() {
   return pdf
 }
 
-function openerMenuItem(opener: Opener): MenuitemOptions {
-  return {
-    tag: 'menuitem',
-    label: opener.label,
-    isHidden: async (elem, ev) => !(await selectedPDF()),
-    commandListener: async (ev) => {
-      const target = ev.target as HTMLSelectElement
-      let args: string[] = unshell(opener.cmdline)
-      const cmd = args.shift()
-      const pdf = await selectedPDF()
-      exec(cmd, args.map((arg: string) => arg.replace(/@pdf/i, pdf.getFilePath() as string)))
-    },
-  }
-}
 export class ZoteroAltOpenPDF {
   shutdown() {
     log('shutdown')
@@ -108,12 +94,18 @@ export class ZoteroAltOpenPDF {
     log(`onMainWindowLoad: ${!window.document.getElementById('open-pdf-internal')}`)
     if (window.document.getElementById('open-pdf-internal')) return
 
+    // filehandler: '' == internal, 'system' = system, other = custom
     const system: MenuitemOptions[] = [
       {
         tag: 'menuitem',
         id: 'open-pdf-internal',
         label: Zotero.getString('locate.internalViewer.label') as string,
-        isHidden: async (elem, ev) => (!Zotero.Prefs.get('fileHandler.pdf') || !(await selectedPDF())),
+        isHidden: async (elem, ev) => {
+          return !(
+            Zotero.Prefs.get('fileHandler.pdf') // internal is not the default
+            && await selectedPDF()
+          )
+        },
         commandListener: async () => {
           Zotero.Reader.open((await selectedPDF())!.id, undefined, { openInWindow: false })
         },
@@ -122,7 +114,12 @@ export class ZoteroAltOpenPDF {
         tag: 'menuitem',
         id: 'open-pdf-system',
         label: Zotero.getString('locate.externalViewer.label') as string,
-        isHidden: async (elem, ev) => ((Zotero.Prefs.get('fileHandler.pdf') !== 'system') || !(await selectedPDF())),
+        isHidden: async (elem, ev) => {
+          return !(
+            Zotero.Prefs.get('fileHandler.pdf') !== 'system' // system is not the default
+            && await selectedPDF()
+          )
+        },
         commandListener: async () => {
           Zotero.launchFile((await selectedPDF())!.getFilePath() as string)
         },
@@ -132,18 +129,33 @@ export class ZoteroAltOpenPDF {
     const custom: MenuitemOptions[] = (Zotero.Prefs.rootBranch.getChildList(Openers) as string[])
       .map(cmdline => getOpener(cmdline))
       .filter(opener => opener.label && opener.cmdline)
-      .map(opener => openerMenuItem(opener))
+      .map(opener => ({
+        tag: 'menuitem',
+        label: opener.label,
+        isHidden: async (elem, ev) => !(await selectedPDF()),
+        commandListener: async ev => {
+          const target = ev.target as HTMLSelectElement
+          let args: string[] = unshell(opener.cmdline)
+          const cmd = args.shift()
+          const pdf = await selectedPDF()
+          exec(cmd, args.map((arg: string) => arg.replace(/@pdf/i, pdf.getFilePath() as string)))
+        },
+      }))
 
-    log(JSON.stringify(await Promise.all([ ...system, ...custom ].map(async mi => ({ label: mi.label, hidden: await mi.isHidden(null, null) })))))
+    const openers = [...system, ...custom]
 
     Menu.register('item', {
       tag: 'menu',
       label: 'Open PDF',
       icon: require('./pdf.png'),
-      children: [
-        ...system,
-        ...custom,
-      ],
+      isHidden: async (elem, ev) => {
+        if (!(await selectedPDF())) return true
+        for (const opener of openers) {
+          if (!(await opener.isHidden(null, null))) return false
+        }
+        return true
+      },
+      children: openers,
     })
     log('onMainWindowLoad done')
   }

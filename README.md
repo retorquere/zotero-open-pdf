@@ -31,7 +31,7 @@ A more complex example is that you can also open PDF files through extensions in
 
 "efaidnbmnnnibpcajpcglclefindmkaj" is the ID of the Acrobat extension. To enable the extension to read the file:/// protocol, you need to turn on "Allow access to file URLs" on the "Manage Extensions" page.
 
-The plugin does not search the system PATH, you need to enter the full path to the executable.
+The plugin does not search the system PATH, you need to enter the full path to the executable. Adding new entries to the menu requires a restart of the plugin.
 
 
 # Warning
