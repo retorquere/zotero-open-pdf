@@ -31,7 +31,17 @@ A more complex example is that you can also open PDF files through extensions in
 
 "efaidnbmnnnibpcajpcglclefindmkaj" is the ID of the Acrobat extension. To enable the extension to read the file:/// protocol, you need to turn on "Allow access to file URLs" on the "Manage Extensions" page.
 
-The plugin does not search the system PATH, you need to enter the full path to the executable. Adding new entries to the menu requires a restart of the plugin.
+**Adding new entries to the menu requires a restart of the plugin.**
+
+In some situations, some programs (such as sioyek) may behave like command-line programs, becoming subprocesses of zotero instead of independent processes when started, causing the program to behave unexpectedly.
+
+On Windows, you can use `start` command to launch it as an independent process.
+
+`extensions.zotero.open-pdf.with.sioyek` = `"C:\Windows\System32\cmd.exe" /c start "" "C:\Users\user\scoop\apps\sioyek\2.0.0\sioyek.exe" --new-window @pdf`
+
+**Pay attention:**
+
+**The plugin does not search the system PATH, you need to enter the full path to the executable. When the path contains spaces or backslashes `\`, you need to wrap the path in quotes " ".**
 
 
 # Warning
