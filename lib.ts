@@ -110,6 +110,10 @@ export class ZoteroAltOpenPDF {
   public async onMainWindowLoad({ window }) {
     log(`onMainWindowLoad: ${!window.document.getElementById('open-pdf-internal')}`)
 
+    const icons: Record<string, string> = {
+      pdf: require('./pdf.png'),
+    }
+
     for (const Kind of Kinds) {
       const kind = Kind.toLowerCase()
       if (window.document.getElementById(`alt-open-${kind}-internal`)) continue
@@ -169,7 +173,7 @@ export class ZoteroAltOpenPDF {
         Menu.register('item', {
           tag: 'menu',
           label: `Open ${Kind}`,
-          icon: require('./pdf.png'),
+          icon: icons[kind],
           isHidden: async (elem, ev) => {
             if (!(await selectedAttachment(kind))) return true
             for (const opener of openers) {
@@ -182,7 +186,7 @@ export class ZoteroAltOpenPDF {
       }
       else {
         for (const mi of system) {
-          Menu.register('item', mi)
+          Menu.register('item', { ...mi, icon: icons[kind] })
         }
       }
     }
