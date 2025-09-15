@@ -165,19 +165,26 @@ export class ZoteroAltOpenPDF {
 
       const openers = [...system, ...custom]
 
-      Menu.register('item', {
-        tag: 'menu',
-        label: `Open ${Kind}`,
-        icon: require('./pdf.png'),
-        isHidden: async (elem, ev) => {
-          if (!(await selectedAttachment(kind))) return true
-          for (const opener of openers) {
-            if (!(await opener.isHidden(null, null))) return false
-          }
-          return true
-        },
-        children: openers,
-      })
+      if (custom.length) {
+        Menu.register('item', {
+          tag: 'menu',
+          label: `Open ${Kind}`,
+          icon: require('./pdf.png'),
+          isHidden: async (elem, ev) => {
+            if (!(await selectedAttachment(kind))) return true
+            for (const opener of openers) {
+              if (!(await opener.isHidden(null, null))) return false
+            }
+            return true
+          },
+          children: openers,
+        })
+      }
+      else {
+        for (const mi of system) {
+          Menu.register('item', mi)
+        }
+      }
     }
     log('onMainWindowLoad done')
   }
