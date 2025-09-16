@@ -7,7 +7,7 @@ const Menu = new MenuManager()
 
 import { DebugLog } from 'zotero-plugin/debug-log'
 const pubkey: string = require('./public.pem')
-DebugLog.register('Open PDF', ['alt-open.', 'fileHandler.pdf'], pubkey)
+DebugLog.register('Open PDF', ['alt-open.', 'fileHandler.'], pubkey)
 
 import unshell from 'shell-quote/parse'
 
@@ -166,17 +166,19 @@ export class ZoteroAltOpenPDF {
             exec(cmd, args.map((arg: string) => arg.replace(placeholder, pdf.getFilePath() as string)))
           },
         }))
-
-      const openers = [...system, ...custom]
+      log(`${kind} customs: ${JSON.stringify(custom.map(mi => mi.label))}`)
 
       if (custom.length) {
+        const openers = [...system, ...custom]
         Menu.register('item', {
           tag: 'menu',
           label: `Open ${Kind}`,
           icon: icons[kind],
           isHidden: async (elem, ev) => {
+            log(`menu activated: selected ${kind} = ${await selectedAttachment(kind)}`)
             if (!(await selectedAttachment(kind))) return true
             for (const opener of openers) {
+              log(`${kind} submenu ${opener.label}: hidden = ${await opener.isHidden(null, null)}`)
               if (!(await opener.isHidden(null, null))) return false
             }
             return true
