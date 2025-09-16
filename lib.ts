@@ -112,6 +112,8 @@ export class ZoteroAltOpenPDF {
 
     const icons: Record<string, string> = {
       pdf: require('./pdf.png'),
+      epub: require('./epub.png'),
+      snapshot: require('./snapshot.png'),
     }
 
     for (const Kind of Kinds) {
