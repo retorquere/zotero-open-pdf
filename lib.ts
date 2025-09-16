@@ -151,7 +151,7 @@ export class ZoteroAltOpenPDF {
       ]
 
       const placeholder = new RegExp(`@${kind}`, 'i')
-      const custom: MenuitemOptions[] = (Zotero.Prefs.rootBranch.getChildList(`alt-open.${kind}.with.`) as string[])
+      const custom: MenuitemOptions[] = (Zotero.Prefs.rootBranch.getChildList(`extensions.zotero.alt-open.${kind}.with.`) as string[])
         .map(cmdline => getOpener(cmdline))
         .filter(opener => opener.label && opener.cmdline)
         .map(opener => ({
