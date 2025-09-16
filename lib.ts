@@ -7,7 +7,7 @@ const Menu = new MenuManager()
 
 import { DebugLog } from 'zotero-plugin/debug-log'
 const pubkey: string = require('./public.pem')
-DebugLog.register('Open PDF', ['extensions.zotero.open-pdf.', ':fileHandler.pdf'], pubkey)
+DebugLog.register('Open PDF', ['alt-open.', 'fileHandler.pdf'], pubkey)
 
 import unshell from 'shell-quote/parse'
 
