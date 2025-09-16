@@ -13,21 +13,21 @@ This plugin adds two things:
 * adds an option to the right-click menu of items to open PDFs with opposite of what you have configured in Zotero (so open with system PDF viewer if you have configured Zotero to open with the internal editor, and vice versa
 * allows you to add extra entries for your own PDF viewers/editor of choice
 
-To add your own, go into the Zotero preferences, tab Advanced, and open the config editor (You will be warned that you can break things. Don't break things). Then right-click and add a new String entry. The key must start with `extensions.zotero.open-pdf.with.`, add any name you want after it, eg `extensions.zotero.open-pdf.with.skim`, and as the value enter the command line needed to start the app, giving `@pdf` as a parameter where the filename must go. this could eg be
+To add your own, go into the Zotero preferences, tab Advanced, and open the config editor (You will be warned that you can break things. Don't break things). Then right-click and add a new String entry. The key must start with `extensions.zotero.alt-open.{pdf|snapshot|epub}.with.`, add any name you want after it, eg `extensions.zotero.alt-open.pdf.with.skim`, and as the value enter the command line needed to start the app, giving `@pdf` as a parameter where the filename must go. this could eg be
 
-`extensions.zotero.open-pdf.with.preview` = `/usr/bin/open -a Preview @pdf`
+`extensions.zotero.alt-open.pdf.with.preview` = `/usr/bin/open -a Preview @pdf`
 
 which would add an option `Open with preview` to the menu. You can set your own menu label by adding it before the path in brackets:
 
-`extensions.zotero.open-pdf.with.skim` = `[Open with Skim]/usr/bin/open -a Skim @pdf`
+`extensions.zotero.alt-open.pdf.with.skim` = `[Open with Skim]/usr/bin/open -a Skim @pdf`
 
 If the path to the executable contains spaces, you need to enclose it in quotes, eg to use edge on windows as a PDF viewer:
 
-`extensions.zotero.open-pdf.with.edge` = `"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" @pdf`
+`extensions.zotero.alt-open.pdf.with.edge` = `"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" @pdf`
 
 A more complex example is that you can also open PDF files through extensions in Chrome, such as the Acrobat extension:
 
-`extensions.zotero.open-pdf.with.chrome-acrobat` = `"C:\Program Files\Google\Chrome\Application\chrome.exe" "chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/file:///@pdf"`
+`extensions.zotero.alt-open.pdf.with.chrome-acrobat` = `"C:\Program Files\Google\Chrome\Application\chrome.exe" "chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/file:///@pdf"`
 
 "efaidnbmnnnibpcajpcglclefindmkaj" is the ID of the Acrobat extension. To enable the extension to read the file:/// protocol, you need to turn on "Allow access to file URLs" on the "Manage Extensions" page.
 
@@ -37,7 +37,7 @@ In some situations, some programs (such as sioyek) may behave like command-line 
 
 On Windows, you can use `start` command to launch it as an independent process.
 
-`extensions.zotero.open-pdf.with.sioyek` = `"C:\Windows\System32\cmd.exe" /c start "" "C:\Users\user\scoop\apps\sioyek\2.0.0\sioyek.exe" --new-window @pdf`
+`extensions.zotero.alt-open.pdf.with.sioyek` = `"C:\Windows\System32\cmd.exe" /c start "" "C:\Users\user\scoop\apps\sioyek\2.0.0\sioyek.exe" --new-window @pdf`
 
 **Pay attention:**
 
