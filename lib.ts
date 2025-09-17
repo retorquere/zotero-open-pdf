@@ -110,10 +110,19 @@ export class ZoteroAltOpenPDF {
   public async onMainWindowLoad({ window }) {
     log(`onMainWindowLoad: ${!window.document.getElementById('open-pdf-internal')}`)
 
-    const icons: Record<string, string> = {
-      pdf: require('./pdf.png'),
-      epub: require('./epub.png'),
-      snapshot: require('./snapshot.png'),
+    const theme = window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+
+    const icons: Record<string, Record<string, string>> = {
+      light: {
+        pdf: require('./pdf-light.png'),
+        epub: require('./epub-light.png'),
+        snapshot: require('./snapshot-light.png'),
+      },
+      dark: {
+        pdf: require('./pdf-dark.png'),
+        epub: require('./epub-dark.png'),
+        snapshot: require('./snapshot-dark.png'),
+      },
     }
 
     for (const Kind of Kinds) {
@@ -175,7 +184,7 @@ export class ZoteroAltOpenPDF {
         Menu.register('item', {
           tag: 'menu',
           label: `Open ${Kind}`,
-          icon: icons[kind],
+          icon: icons[theme][kind],
           isHidden: async (elem, ev) => {
             log(`menu activated: selected ${kind} = ${await selectedAttachment(kind)}`)
             if (!(await selectedAttachment(kind))) return true
@@ -190,7 +199,7 @@ export class ZoteroAltOpenPDF {
       }
       else {
         for (const mi of system) {
-          Menu.register('item', { ...mi, icon: icons[kind] })
+          Menu.register('item', { ...mi, icon: icons[theme][kind] })
         }
       }
     }
