@@ -109,21 +109,21 @@ export class ZoteroAltOpenPDF {
 
   public async onMainWindowLoad({ window }) {
     log(`onMainWindowLoad: ${!window.document.getElementById('open-pdf-internal')}`)
+    this.makeMenu(window)
 
-    const theme = window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    const mode = window.matchMedia('(prefers-color-scheme: dark)')
+	  mode.addEventListener('change', (ev) => {
+      this.makeMenu(window)
+	  })
+    log('onMainWindowLoad done')
+  }
 
-    const icons: Record<string, Record<string, string>> = {
-      light: {
-        pdf: require('./pdf-light.png'),
-        epub: require('./epub-light.png'),
-        snapshot: require('./snapshot-light.png'),
-      },
-      dark: {
-        pdf: require('./pdf-dark.png'),
-        epub: require('./epub-dark.png'),
-        snapshot: require('./snapshot-dark.png'),
-      },
-    }
+  private makeMenu(window) {
+    if (!window) return
+
+    Menu.unregisterAll()
+
+    const mode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 
     for (const Kind of Kinds) {
       const kind = Kind.toLowerCase()
@@ -179,12 +179,14 @@ export class ZoteroAltOpenPDF {
         }))
       log(`${kind} customs: ${JSON.stringify(custom.map(mi => mi.label))}`)
 
+      const mode = window.matchMedia('(prefers-color-scheme: dark)') ? 'dark' : 'light'
       if (custom.length) {
         const openers = [...system, ...custom]
+        log(`chrome://zotero-open-pdf/content/${kind}-${mode}.svg`)
         Menu.register('item', {
           tag: 'menu',
           label: `Open ${Kind}`,
-          icon: icons[theme][kind],
+          icon: `chrome://zotero-open-pdf/content/${kind}-${mode}.svg`,
           isHidden: async (elem, ev) => {
             log(`menu activated: selected ${kind} = ${await selectedAttachment(kind)}`)
             if (!(await selectedAttachment(kind))) return true
@@ -199,11 +201,12 @@ export class ZoteroAltOpenPDF {
       }
       else {
         for (const mi of system) {
-          Menu.register('item', { ...mi, icon: icons[theme][kind] })
+          log(`chrome://zotero-open-pdf/content/${kind}-${mode}.svg`)
+          Menu.register('item', { ...mi, icon: `chrome://zotero-open-pdf/content/${kind}-${mode}.svg` })
         }
       }
     }
-    log('onMainWindowLoad done')
+    log('makeMenu done')
   }
 
   public async onMainWindowUnLoad() {

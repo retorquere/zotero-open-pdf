@@ -20,8 +20,16 @@ import { bootstrapLog as log } from './lib/log'
 export async function install(): Promise<void> {
 }
 
+let chromeHandle
 export async function startup({ id, version, resourceURI, rootURI = resourceURI.spec }): Promise<void> {
   log('startup')
+
+  const aomStartup = Cc['@mozilla.org/addons/addon-manager-startup;1'].getService(Ci.amIAddonManagerStartup) as amIAddonManagerStartup
+  const manifestURI = Services.io.newURI(`${rootURI}manifest.json`)
+  log(manifestURI.spec)
+  chromeHandle = aomStartup.registerChrome(manifestURI, [
+    ['content', 'zotero-open-pdf', 'icons/'],
+  ])
 
   // Add DOM elements to the main Zotero pane
   try {

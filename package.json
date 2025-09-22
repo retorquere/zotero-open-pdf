@@ -6,7 +6,7 @@
     "lint": "dprint fmt bootstrap.ts content/*.ts && dprint check bootstrap.ts content/*.ts",
     "prebuild": "rm -rf build && mkdir build && npm run lint",
     "build": "tsc --noEmit && node esbuild.js",
-    "postbuild": "zp-zipup build zotero-open-pdf",
+    "postbuild": "mkdir -p build/icons && cp icons/* build/icons && zp-zipup build zotero-open-pdf",
     "release": "zp-release",
     "postversion": "git push --follow-tags",
     "postinstall": "patch-package",
