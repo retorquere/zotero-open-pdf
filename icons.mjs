@@ -59,6 +59,6 @@ for (const kind of ['pdf', 'snapshot', 'epub']) {
     }
   }
 
-  fs.writeFileSync(`icons/${kind}.svg`, icons.light.dom.serialize())
+  fs.writeFileSync(`icons/${kind}.svg`, icons.light.dom.serialize().replace(' xmlns=""', ''))
 }
 
