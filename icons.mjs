@@ -40,6 +40,19 @@ for (const kind of ['pdf', 'snapshot', 'epub']) {
   const svg = icons.light.doc.querySelector('svg')
   svg.prepend(style)
 
+  console.log('clipPath:', kind, icons.light.doc.querySelector('clipPath'))
+  const clipPath = {
+    light: icons.light.doc.querySelector('clipPath'),
+    dark: icons.dark.doc.querySelectorAll('[clip-path]'),
+  }
+
+  if (clipPath.light) {
+    for (const e of [...clipPath.dark]) {
+      e.setAttribute('clip-path', clipPath.light.getAttribute('id'))
+    }
+  }
+
+
   let pred = [...icons.light.doc.querySelectorAll('g')].reverse()[0]
   for (const g of [...icons.dark.doc.querySelectorAll('g')]) {
     pred.after(g)
