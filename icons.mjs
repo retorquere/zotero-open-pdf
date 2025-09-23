@@ -10,9 +10,10 @@ for (const kind of ['pdf', 'snapshot', 'epub']) {
       dom: new JSDOM(svg, { contentType: 'image/svg+xml' })
     }
     icons[mode].doc = icons[mode].dom.window.document
+    icons[mode].root = icons[mode].doc.querySelector('svg')
 
-    for (const g of [...icons[mode].doc.querySelectorAll('g')]) {
-      g.classList.add(`${mode}-theme`)
+    for (const e of [...icons[mode].root.children]) {
+      if (e.nodeName !== 'defs') e.classList.add(`${mode}-theme`)
     }
   }
 
@@ -37,10 +38,8 @@ for (const kind of ['pdf', 'snapshot', 'epub']) {
     }
   `
 
-  const svg = icons.light.doc.querySelector('svg')
-  svg.prepend(style)
+  icons.light.root.prepend(style)
 
-  console.log('clipPath:', kind, icons.light.doc.querySelector('clipPath'))
   const clipPath = {
     light: icons.light.doc.querySelector('clipPath'),
     dark: icons.dark.doc.querySelectorAll('[clip-path]'),
@@ -52,11 +51,12 @@ for (const kind of ['pdf', 'snapshot', 'epub']) {
     }
   }
 
-
-  let pred = [...icons.light.doc.querySelectorAll('g')].reverse()[0]
-  for (const g of [...icons.dark.doc.querySelectorAll('g')]) {
-    pred.after(g)
-    pred = g
+  let pred = [...icons.light.root.children].filter(e => e.nodeName !== 'defs').reverse()[0]
+  for (const e of [...icons.dark.root.children]) {
+    if (e.nodeName !== 'defs') {
+      pred.after(e)
+      pred = e
+    }
   }
 
   fs.writeFileSync(`icons/${kind}.svg`, icons.light.dom.serialize())
