@@ -108,22 +108,7 @@ export class ZoteroAltOpenPDF {
   }
 
   public async onMainWindowLoad({ window }) {
-    log(`onMainWindowLoad: ${!window.document.getElementById('open-pdf-internal')}`)
-    this.makeMenu(window)
-
-    const mode = window.matchMedia('(prefers-color-scheme: dark)')
-	  mode.addEventListener('change', (ev) => {
-      this.makeMenu(window)
-	  })
-    log('onMainWindowLoad done')
-  }
-
-  private makeMenu(window) {
-    if (!window) return
-
-    Menu.unregisterAll()
-
-    const mode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    log('onMainWindowLoad')
 
     for (const Kind of Kinds) {
       const kind = Kind.toLowerCase()
@@ -179,14 +164,13 @@ export class ZoteroAltOpenPDF {
         }))
       log(`${kind} customs: ${JSON.stringify(custom.map(mi => mi.label))}`)
 
-      const mode = window.matchMedia('(prefers-color-scheme: dark)') ? 'dark' : 'light'
       if (custom.length) {
         const openers = [...system, ...custom]
-        log(`chrome://zotero-open-pdf/content/${kind}-${mode}.svg`)
+        log(`chrome://zotero-open-pdf/content/${kind}.svg`)
         Menu.register('item', {
           tag: 'menu',
           label: `Open ${Kind}`,
-          icon: `chrome://zotero-open-pdf/content/${kind}-${mode}.svg`,
+          icon: `chrome://zotero-open-pdf/content/${kind}.svg`,
           isHidden: async (elem, ev) => {
             log(`menu activated: selected ${kind} = ${await selectedAttachment(kind)}`)
             if (!(await selectedAttachment(kind))) return true
@@ -201,12 +185,12 @@ export class ZoteroAltOpenPDF {
       }
       else {
         for (const mi of system) {
-          log(`chrome://zotero-open-pdf/content/${kind}-${mode}.svg`)
-          Menu.register('item', { ...mi, icon: `chrome://zotero-open-pdf/content/${kind}-${mode}.svg` })
+          log(`chrome://zotero-open-pdf/content/${kind}.svg`)
+          Menu.register('item', { ...mi, icon: `chrome://zotero-open-pdf/content/${kind}.svg` })
         }
       }
     }
-    log('makeMenu done')
+    log('onMainWindowLoad done')
   }
 
   public async onMainWindowUnLoad() {

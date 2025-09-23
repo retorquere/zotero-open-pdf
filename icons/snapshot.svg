@@ -1,4 +1,22 @@
-<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"><style xmlns="">
+    .light-theme {
+      display: block;
+    }
+
+    .dark-theme {
+      display: none;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .light-theme {
+        display: none;
+      }
+
+      .dark-theme {
+        display: block;
+      }
+    }
+  </style>
 <path opacity="0.5" d="M1.75 2H24.25C24.7141 2 25.1592 2.18437 25.4874 2.51256C25.8156 2.84075 26 3.28587 26 3.75V25H0V3.75C0 3.28587 0.184374 2.84075 0.512563 2.51256C0.840752 2.18437 1.28587 2 1.75 2Z" fill="white"/>
 <path d="M25 9H1V24H25V9Z" fill="white"/>
 <path opacity="0.04" d="M1.75 3H24.25C24.4489 3 24.6397 3.07902 24.7803 3.21967C24.921 3.36032 25 3.55109 25 3.75V9H1V3.75C1 3.55109 1.07902 3.36032 1.21967 3.21967C1.36032 3.07902 1.55109 3 1.75 3Z" fill="black"/>
