@@ -2,10 +2,11 @@
   "name": "zotero-open-pdf",
   "version": "1.0.5",
   "description": "Open PDF",
+  "type": "module",
   "scripts": {
     "lint": "dprint fmt bootstrap.ts content/*.ts && dprint check bootstrap.ts content/*.ts",
     "prebuild": "rm -rf build && mkdir build && npm run lint",
-    "build": "tsc --noEmit && node esbuild.js",
+    "build": "tsc --noEmit && node esbuild.cjs",
     "postbuild": "mkdir -p build/icons && cp icons/* build/icons && zp-zipup build zotero-open-pdf",
     "release": "zp-release",
     "postversion": "git add package.json package-lock.json && git commit -m version && git push --follow-tags",

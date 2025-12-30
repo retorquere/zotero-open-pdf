@@ -3,7 +3,6 @@
     "importHelpers": true,
     "target": "es2017",
     "disableSizeLimit": true,
-    "module": "commonjs",
     "noImplicitAny": false,
     "esModuleInterop": true,
     "removeComments": false,
@@ -11,6 +10,8 @@
     "sourceMap": false,
     "downlevelIteration": true,
     "skipLibCheck": true,
+    "module": "preserve",
+    "moduleResolution": "bundler",
     "lib": [ "es2017", "dom", "dom.iterable", "webworker", "ES2021.WeakRef" ],
     "typeRoots": [ "node_modules", "./typings", "./node_modules/@types" ],
     "types": ["zotero-types"]
