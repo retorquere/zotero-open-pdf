@@ -6,7 +6,7 @@ import { MenuitemOptions, MenuManager } from 'zotero-plugin-toolkit'
 const Menu = new MenuManager()
 
 import { DebugLog } from 'zotero-plugin/debug-log'
-const pubkey: string = require('./public.pem')
+import { jwk as pubkey } from './public'
 DebugLog.register('Open PDF', ['alt-open.', 'fileHandler.'], pubkey)
 
 import unshell from 'shell-quote/parse'

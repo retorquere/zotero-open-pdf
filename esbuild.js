@@ -1,13 +1,13 @@
-const path = require('path')
-const fs = require('fs')
-const esbuild = require('esbuild')
-const rmrf = require('rimraf')
-rmrf.sync('gen')
+import path from 'path'
+import fs from 'fs'
+import esbuild from 'esbuild'
 
-require('zotero-plugin/copy-assets')
-require('zotero-plugin/manifest')
-require('zotero-plugin/version')
-const { pem } = require('zotero-plugin/esbuild')
+import { rimrafSync as rmrf } from 'rimraf'
+rmrf('gen')
+
+import 'zotero-plugin/copy-assets'
+import 'zotero-plugin/make-manifest'
+import 'zotero-plugin/make-version'
 
 function js(src) {
   return src.replace(/[.]ts$/, '.js')
@@ -19,7 +19,6 @@ async function bundle(config) {
     format: 'iife',
     target: ['firefox60'],
     inject: [],
-    plugins: [pem],
     treeShaking: true,
     keepNames: true,
     loader: {
