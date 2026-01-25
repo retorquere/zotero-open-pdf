@@ -2,10 +2,8 @@ import path from 'path'
 import fs from 'fs'
 import esbuild from 'esbuild'
 
-import { rimrafSync as rmrf } from 'rimraf'
-rmrf('gen')
+import 'zotero-plugin/make-dirs'
 
-import 'zotero-plugin/copy-assets'
 import 'zotero-plugin/make-manifest'
 import 'zotero-plugin/make-version'
 
