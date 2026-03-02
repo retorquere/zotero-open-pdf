@@ -2,18 +2,19 @@
 
 // declare const dump: (msg: string) => void
 
-import { MenuitemOptions, MenuManager } from 'zotero-plugin-toolkit'
-const Menu = new MenuManager()
-
 import { DebugLog } from 'zotero-plugin/debug-log'
 import { jwk as pubkey } from './public'
 DebugLog.register('Open PDF', ['alt-open.', 'fileHandler.'], pubkey)
+
+type ItemMenu = _ZoteroTypes.MenuManager.MenuData<_ZoteroTypes.MenuManager.LibraryMenuContext>
 
 import unshell from 'shell-quote/parse'
 
 import { log } from './lib/log'
 
 log('lib loading')
+
+const pluginID = 'zotero-open-pdf@iris-advies.com'
 
 const Kinds = ['PDF', 'Snapshot', 'ePub']
 
@@ -87,8 +88,6 @@ async function selectedAttachment(kind: string) {
 
 export class ZoteroAltOpenPDF {
   shutdown() {
-    log('shutdown')
-    Menu.unregisterAll()
     log('shutdown done')
   }
 
@@ -115,87 +114,77 @@ export class ZoteroAltOpenPDF {
       if (window.document.getElementById(`alt-open-${kind}-internal`)) continue
 
       // filehandler: '' == internal, 'system' = system, other = custom
-      const system: MenuitemOptions[] = [
+      const system: ItemMenu[] = [
         {
-          tag: 'menuitem',
-          id: `alt-open-${kind}-internal`,
-          label: Zotero.getString('locate.internalViewer.label') as string,
-          isHidden: async (elem, ev) => {
-            return !(
-              Zotero.Prefs.get(`fileHandler.${kind}`) // internal is not the default
-              && await selectedAttachment(kind)
-            )
+          menuType: 'menuitem',
+          onShowing: async (_event, context) => {
+            context.menuElem.setAttribute('label', Zotero.getString('locate.internalViewer.label') as string)
+            // : internal is not the default
+            context.setVisible(Zotero.Prefs.get(`fileHandler.${kind}`) && !!(await selectedAttachment(kind)))
           },
-          commandListener: async () => {
+          onCommand: async (_event, _context) => {
             Zotero.Reader.open((await selectedAttachment(kind))!.id, undefined, { openInWindow: false })
           },
         },
         {
-          tag: 'menuitem',
-          id: `alt-open-${kind}-system`,
-          label: Zotero.getString('locate.externalViewer.label') as string,
-          isHidden: async (elem, ev) => {
-            return !(
-              Zotero.Prefs.get(`fileHandler.${kind}`) !== 'system' // system is not the default
-              && await selectedAttachment(kind)
-            )
+          menuType: 'menuitem',
+          onShowing: async (_event, context) => {
+            context.menuElem.setAttribute('label', Zotero.getString('locate.externalViewer.label') as string)
+            // system is not the default
+            context.setVisible(Zotero.Prefs.get(`fileHandler.${kind}`) !== 'system' && !!(await selectedAttachment(kind)))
           },
-          commandListener: async () => {
+          onCommand: async (_event, _context) => {
             Zotero.launchFile((await selectedAttachment(kind))!.getFilePath() as string)
           },
         },
       ]
 
       const placeholder = new RegExp(`@${kind}`, 'i')
-      const custom: MenuitemOptions[] = (Zotero.Prefs.rootBranch.getChildList(`extensions.zotero.alt-open.${kind}.with.`) as string[])
+      const custom: ItemMenu[] = (Zotero.Prefs.rootBranch.getChildList(`extensions.zotero.alt-open.${kind}.with.`) as string[])
         .map(cmdline => getOpener(cmdline))
         .filter(opener => opener.label && opener.cmdline)
         .map(opener => ({
-          tag: 'menuitem',
-          label: opener.label,
-          isHidden: async (elem, ev) => !(await selectedAttachment(kind)),
-          commandListener: async ev => {
-            const target = ev.target as HTMLSelectElement
+          menuType: 'menuitem',
+          onShowing: async (_event, context) => {
+            context.menuElem.setAttribute('label', opener.label)
+            context.setVisible(!!(await selectedAttachment(kind)))
+          },
+          onCommand: async (_event, _context) => {
             let args: string[] = unshell(opener.cmdline)
             const cmd = args.shift()
             const pdf = await selectedAttachment(kind)
             exec(cmd, args.map((arg: string) => arg.replace(placeholder, pdf.getFilePath() as string)))
           },
         }))
-      log(`${kind} customs: ${JSON.stringify(custom.map(mi => mi.label))}`)
 
       if (custom.length) {
-        const openers = [...system, ...custom]
-        log(`chrome://zotero-open-pdf/content/${kind}.svg`)
-        Menu.register('item', {
-          tag: 'menu',
-          label: `Open ${Kind}`,
-          icon: `chrome://zotero-open-pdf/content/${kind}.svg`,
-          isHidden: async (elem, ev) => {
-            log(`menu activated: selected ${kind} = ${await selectedAttachment(kind)}`)
-            if (!(await selectedAttachment(kind))) return true
-            for (const opener of openers) {
-              log(`${kind} submenu ${opener.label}: hidden = ${await opener.isHidden(null, null)}`)
-              if (!(await opener.isHidden(null, null))) return false
-            }
-            return true
-          },
-          children: openers,
+        Zotero.MenuManager.registerMenu({
+          menuID: `${pluginID}-menu-item`,
+          pluginID,
+          target: 'main/library/item',
+          menus: [{
+            menuType: 'submenu',
+            onShowing: async (_event, context) => {
+              context.menuElem.setAttribute('label', `Open ${Kind}`)
+              context.setVisible(!!(await selectedAttachment(kind)))
+            },
+            menus: [...system, ...custom],
+          }],
         })
       }
       else {
-        for (const mi of system) {
-          log(`chrome://zotero-open-pdf/content/${kind}.svg`)
-          Menu.register('item', { ...mi, icon: `chrome://zotero-open-pdf/content/${kind}.svg` })
-        }
+        Zotero.MenuManager.registerMenu({
+          menuID: `${pluginID}-menu-item`,
+          pluginID,
+          target: 'main/library/item',
+          menus: system,
+        })
       }
     }
     log('onMainWindowLoad done')
   }
 
   public async onMainWindowUnLoad() {
-    log('onMainWindowUnload')
-    Menu.unregisterAll()
     log('onMainWindowUnload done')
   }
 }
