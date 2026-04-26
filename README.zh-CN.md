@@ -3,7 +3,7 @@ Open PDF
 
 [English](README.md) | 简体中文
 
-通过下载[最新版本](https://github.com/retorquere/zotero-open-pdf/releases/latest)安装。兼容 Zotero 6 和 7。
+通过下载[最新版本](https://github.com/retorquere/zotero-open-pdf/releases/latest)安装。兼容 Zotero 7、8 和 9。
 
 Zotero 自己可以设置 PDF 的默认打开方式：
 

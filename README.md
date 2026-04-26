@@ -3,7 +3,7 @@ Open PDF
 
 English | [简体中文](README.zh-CN.md)
 
-Install by downloading the [latest version](https://github.com/retorquere/zotero-open-pdf/releases/latest). Compatible with Zotero 6 and 7.
+Install by downloading the [latest version](https://github.com/retorquere/zotero-open-pdf/releases/latest). Compatible with Zotero 7, 8, and 9.
 
 Zotero allows you to set a default for opening PDFs from Zotero:
 
