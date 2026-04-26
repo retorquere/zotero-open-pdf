@@ -1,6 +1,8 @@
 Open PDF
 =================
 
+English | [简体中文](README.zh-CN.md)
+
 Install by downloading the [latest version](https://github.com/retorquere/zotero-open-pdf/releases/latest). Compatible with Zotero 6 and 7.
 
 Zotero allows you to set a default for opening PDFs from Zotero:
@@ -12,6 +14,10 @@ This plugin adds two things:
 
 * adds an option to the right-click menu of items to open PDFs with opposite of what you have configured in Zotero (so open with system PDF viewer if you have configured Zotero to open with the internal editor, and vice versa
 * allows you to add extra entries for your own PDF viewers/editor of choice
+
+The menu language follows Zotero's UI language. If you want to override it manually, add a new String entry in the config editor:
+
+`extensions.zotero.alt-open.locale` = `en` or `zh`
 
 To add your own, go into the Zotero preferences, tab Advanced, and open the config editor (You will be warned that you can break things. Don't break things). Then right-click and add a new String entry. The key must start with `extensions.zotero.alt-open.{pdf|snapshot|epub}.with.`, add any name you want after it, eg `extensions.zotero.alt-open.pdf.with.skim`, and as the value enter the command line needed to start the app, giving `@pdf` as a parameter where the filename must go. this could eg be
 
