@@ -46,7 +46,8 @@
     "updateLink": "https://github.com/retorquere/zotero-open-pdf/releases/download/v{version}/zotero-open-pdf-{version}.xpi",
     "releaseURL": "https://github.com/retorquere/zotero-open-pdf/releases/download/release/",
     "bootstrapped": true,
-    "minVersion": "7.0"
+    "minVersion": "7.0",
+    "maxVersion": "9.*"
   },
   "devDependencies": {
     "jsdom": "^27.4.0",

@@ -16,6 +16,76 @@ import { log } from './lib/log'
 log('lib loading')
 
 const Kinds = ['PDF', 'Snapshot', 'ePub']
+const KindLabels = {
+  en: {
+    pdf: 'PDF',
+    snapshot: 'Snapshot',
+    epub: 'ePub',
+  },
+  zh: {
+    pdf: 'PDF',
+    snapshot: '快照',
+    epub: 'ePub',
+  },
+} as const
+
+const Messages = {
+  en: {
+    headline: 'Open PDF',
+    openFailed: 'Opening failed',
+    openMenu: 'Open {kind}',
+    openWith: 'Open with {name}',
+    notFound: '{path} not found',
+    notRunnable: '{path} is not runnable',
+  },
+  zh: {
+    headline: '打开附件',
+    openFailed: '打开失败',
+    openMenu: '打开 {kind}',
+    openWith: '使用 {name} 打开',
+    notFound: '未找到 {path}',
+    notRunnable: '{path} 无法运行',
+  },
+} as const
+
+type Locale = keyof typeof Messages
+
+function normalizeLocale(locale: string): Locale | null {
+  const normalized = locale.trim().toLowerCase()
+  if (!normalized) return null
+  if (normalized === 'en' || normalized.startsWith('en-')) return 'en'
+  if (normalized === 'zh' || normalized.startsWith('zh-')) return 'zh'
+  return null
+}
+
+function locale(): Locale {
+  const override = normalizeLocale(`${Zotero.Prefs.get('extensions.zotero.alt-open.locale', true) || ''}`)
+  if (override) return override
+
+  for (const source of [
+    `${Zotero.locale || ''}`,
+    `${Services?.locale?.requestedLocale || ''}`,
+    `${Services?.locale?.appLocaleAsBCP47 || ''}`,
+    `${Services?.locale?.lastFallbackLocale || ''}`,
+  ]) {
+    const detected = normalizeLocale(source)
+    if (detected) return detected
+  }
+
+  return 'en'
+}
+
+function t(key: keyof typeof Messages.en, vars: Record<string, string> = {}): string {
+  let text: string = Messages[locale()][key]
+  for (const [name, value] of Object.entries(vars)) {
+    text = text.replace(`{${name}}`, value)
+  }
+  return text
+}
+
+function kindLabel(kind: string): string {
+  return KindLabels[locale()][kind] || kind
+}
 
 type Opener = { label: string; cmdline: string }
 function getOpener(opener: string): Opener {
@@ -24,7 +94,10 @@ function getOpener(opener: string): Opener {
   if (!cmdline) return { label: '', cmdline: '' }
   const m = cmdline.match(/^\[(.+?)\](.+)/)
   if (m) return { label: m[1], cmdline: m[2] }
-  return { label: `Open with ${opener.replace(/^extensions\.zotero\.alt-open\.[a-z]+\.with\./, '')}`, cmdline }
+  return {
+    label: t('openWith', { name: opener.replace(/^extensions\.zotero\.alt-open\.[a-z]+\.with\./, '') }),
+    cmdline,
+  }
 }
 
 function exec(exe: string, args: string[] = []): void {
@@ -32,11 +105,11 @@ function exec(exe: string, args: string[] = []): void {
 
   const cmd = Zotero.File.pathToFile(exe)
   if (!cmd.exists()) {
-    flash('opening PDF failed', `${exe} not found`)
+    flash(t('openFailed'), t('notFound', { path: exe }))
     return
   }
   if (!cmd.isExecutable()) {
-    flash('opening PDF failed', `${exe} is not runnable`)
+    flash(t('openFailed'), t('notRunnable', { path: exe }))
     return
   }
 
@@ -50,10 +123,8 @@ function flash(title: string, body?: string, timeout = 8): void {
   try {
     log(`flash: ${JSON.stringify({ title, body })}`)
     const pw = new Zotero.ProgressWindow()
-    pw.changeHeadline(`open-pdf ${title}`)
-    if (!body) body = title
-    if (Array.isArray(body)) body = body.join('\n')
-    pw.addDescription(body)
+    pw.changeHeadline(t('headline'))
+    pw.addDescription(body ? `${title}\n${body}` : title)
     pw.show()
     pw.startCloseTimer(timeout * 1000)
   }
@@ -169,7 +240,7 @@ export class ZoteroAltOpenPDF {
         log(`chrome://zotero-open-pdf/content/${kind}.svg`)
         Menu.register('item', {
           tag: 'menu',
-          label: `Open ${Kind}`,
+          label: t('openMenu', { kind: kindLabel(kind) }),
           icon: `chrome://zotero-open-pdf/content/${kind}.svg`,
           isHidden: async (elem, ev) => {
             log(`menu activated: selected ${kind} = ${await selectedAttachment(kind)}`)
