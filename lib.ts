@@ -167,7 +167,7 @@ export class ZoteroAltOpenPDF {
       const prefix = `extensions.zotero.open-${kind}.with.`
       for (const old of Zotero.Prefs.rootBranch.getChildList(prefix) as string[]) {
         const migrated = old.replace(prefix, `alt-open.${kind}.with.`)
-        Zotero.Prefs.set(old.replace(prefix, `alt-open.${kind}.with.`), Zotero.Prefs.get(old, true))
+        Zotero.Prefs.set(old.replace(prefix, `alt-open.${kind}.with.`), Zotero.Prefs.get(old, true) as string)
         Zotero.Prefs.clear(old, true)
       }
     }
@@ -191,7 +191,7 @@ export class ZoteroAltOpenPDF {
           onShowing: async (_event, context) => {
             context.menuElem.setAttribute('label', Zotero.getString('locate.internalViewer.label') as string)
             // : internal is not the default
-            context.setVisible(Zotero.Prefs.get(`fileHandler.${kind}`) && !!(await selectedAttachment(kind)))
+            context.setVisible(!!Zotero.Prefs.get(`fileHandler.${kind}`) && !!(await selectedAttachment(kind)))
           },
           onCommand: async (_event, _context) => {
             Zotero.Reader.open((await selectedAttachment(kind))!.id, undefined, { openInWindow: false })
@@ -224,7 +224,7 @@ export class ZoteroAltOpenPDF {
             let args: string[] = unshell(opener.cmdline)
             const cmd = args.shift()
             const pdf = await selectedAttachment(kind)
-            exec(cmd, args.map((arg: string) => arg.replace(placeholder, pdf.getFilePath() as string)))
+            if (cmd && pdf) exec(cmd, args.map((arg: string) => arg.replace(placeholder, pdf.getFilePath() as string)))
           },
         }))
 

@@ -8,7 +8,6 @@
     "removeComments": false,
     "preserveConstEnums": false,
     "sourceMap": false,
-    "downlevelIteration": true,
     "skipLibCheck": true,
     "lib": [ "es2017", "dom", "dom.iterable", "webworker", "ES2021.WeakRef" ],
     "typeRoots": [ "node_modules", "./typings", "./node_modules/@types" ],
