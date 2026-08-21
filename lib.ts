@@ -221,7 +221,7 @@ export class ZoteroAltOpenPDF {
             context.setVisible(!!(await selectedAttachment(kind)))
           },
           onCommand: async (_event, _context) => {
-            let args: string[] = unshell(opener.cmdline)
+            const args = unshell(opener.cmdline).filter((arg): arg is string => typeof arg === 'string')
             const cmd = args.shift()
             const pdf = await selectedAttachment(kind)
             if (cmd && pdf) exec(cmd, args.map((arg: string) => arg.replace(placeholder, pdf.getFilePath() as string)))
