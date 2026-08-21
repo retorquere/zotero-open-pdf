@@ -1,7 +1,7 @@
 {
   "name": "zotero-open-pdf",
   "type": "module",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Open PDF",
   "scripts": {
     "lint": "dprint fmt bootstrap.ts content/*.ts && dprint check bootstrap.ts content/*.ts",
