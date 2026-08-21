@@ -136,8 +136,8 @@ function flash(title: string, body?: string, timeout = 8): void {
 }
 
 async function selectedAttachment(kind: string) {
-  const items = Zotero.getActiveZoteroPane().getSelectedItems()
-  if (items.length !== 1) return null
+  const items = Zotero.getActiveZoteroPane()?.getSelectedItems()
+  if (items?.length !== 1) return null
   const attachment = items[0].isAttachment() ? items[0] : await items[0].getBestAttachment()
   if (!attachment) return null
   if (!attachment.getFilePath()) return null
