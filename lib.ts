@@ -2,9 +2,8 @@
 
 // declare const dump: (msg: string) => void
 
-import { DebugLog } from 'zotero-plugin/debug-log'
+import { DebugLogSender } from 'zotero-plugin/debug-log'
 import { jwk as pubkey } from './public'
-DebugLog.register('Open PDF', ['alt-open.', 'fileHandler.'], pubkey)
 
 type ItemMenu = _ZoteroTypes.MenuManager.MenuData<_ZoteroTypes.MenuManager.LibraryMenuContext>
 
@@ -158,11 +157,15 @@ async function selectedAttachment(kind: string) {
 }
 
 export class ZoteroAltOpenPDF {
+  private sender = new DebugLogSender(pluginID, 'Alt-Open', ['alt-open.'], pubkey)
+
   shutdown() {
     log('shutdown done')
+    this.sender.enabled
   }
 
   public async startup() {
+    this.sender.enabled
     for (const kind of Kinds.map(k => k.toLowerCase())) {
       const prefix = `extensions.zotero.open-${kind}.with.`
       for (const old of Zotero.Prefs.rootBranch.getChildList(prefix) as string[]) {
