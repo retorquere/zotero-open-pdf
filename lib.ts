@@ -228,9 +228,10 @@ export class ZoteroAltOpenPDF {
           },
         }))
 
+      // menuID must be unique per plugin; reusing one makes MenuManager reject the snapshot and epub menus
       if (custom.length) {
         Zotero.MenuManager.registerMenu({
-          menuID: `${pluginID}-menu-item`,
+          menuID: `${pluginID}-${kind}-menu-item`,
           pluginID,
           target: 'main/library/item',
           menus: [{
@@ -245,7 +246,7 @@ export class ZoteroAltOpenPDF {
       }
       else {
         Zotero.MenuManager.registerMenu({
-          menuID: `${pluginID}-menu-item`,
+          menuID: `${pluginID}-${kind}-menu-item`,
           pluginID,
           target: 'main/library/item',
           menus: system,
@@ -255,7 +256,7 @@ export class ZoteroAltOpenPDF {
     log('onMainWindowLoad done')
   }
 
-  public async onMainWindowUnLoad() {
+  public async onMainWindowUnload() {
     log('onMainWindowUnload done')
   }
 }
