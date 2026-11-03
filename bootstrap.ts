@@ -47,7 +47,8 @@ export async function onMainWindowLoad({ window }) {
 }
 
 export async function onMainWindowUnload({ window }) {
-  await Zotero.AltOpenPDF.onMainWindowUnload({ window })
+  // on quit, Zotero calls shutdown (which removes Zotero.AltOpenPDF) before onMainWindowUnload
+  await Zotero.AltOpenPDF?.onMainWindowUnload({ window })
 }
 
 export async function shutdown() {
